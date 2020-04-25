@@ -1,15 +1,34 @@
 const { spawn } = require('child_process');
 const { Transform } = require('stream');
+const remark = require('remark');
+const strip = require('strip-markdown');
 
 const { getOnlyGitInserts } = require('./utils');
 
 const gitDiff = spawn('git', ['diff', '**/*.md']);
 
-const insertStream = new Transform({
+const getGitInsertsStream = new Transform({
   transform(chunk, encoding, callback) {
-    this.push(getOnlyGitInserts(chunk.toString()));
+    const result = getOnlyGitInserts(chunk.toString());
+    this.push(result);
     callback();
   },
 });
 
-gitDiff.stdout.pipe(insertStream).pipe(process.stdout);
+const removeMarkdownStream = new Transform({
+  transform(chunk, encoding, callback) {
+    const dirtyChunk = chunk.toString();
+    remark()
+      .use(strip)
+      .process(dirtyChunk, (err, cleanData) => {
+        if (err) throw err;
+        this.push(String(cleanData));
+        callback();
+      });
+  },
+});
+
+gitDiff.stdout
+  .pipe(getGitInsertsStream)
+  .pipe(removeMarkdownStream)
+  .pipe(process.stdout);

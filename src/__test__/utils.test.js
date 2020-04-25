@@ -1,4 +1,4 @@
-const { isGitInsert, getOnlyInserts } = require('../utils');
+const { isGitInsert, getOnlyGitInserts } = require('../utils');
 
 describe('Utils', () => {
   describe('selectOnlyInserts', () => {
@@ -8,7 +8,7 @@ describe('Utils', () => {
     });
 
     it('should return false if the string is not a git insert -- funky string case', () => {
-      const rawString = "@@ +I'm only a raw string";
+      const rawString = "@@ -+##I'm only a raw string";
       expect(isGitInsert(rawString)).toBe(false);
     });
 
@@ -30,6 +30,10 @@ describe('Utils', () => {
       const rawString = "+     I'm a git insert";
       expect(isGitInsert(rawString)).toBe(true);
     });
+    it('should return true if the string is a git insert with markdown', () => {
+      const rawString = "+## I'm a  markdown string";
+      expect(isGitInsert(rawString)).toBe(true);
+    });
   });
 
   describe('getOnlyInserts', () => {
@@ -42,14 +46,14 @@ describe('Utils', () => {
         `;
 
       const expectedResult = 'Hello\nHello world';
-      expect(getOnlyInserts(rawString)).toEqual(expectedResult);
+      expect(getOnlyGitInserts(rawString)).toEqual(expectedResult);
     });
 
     it('should return only the git inserts -- works also with single string', () => {
       const rawString = '+hello';
 
       const expectedResult = 'hello';
-      expect(getOnlyInserts(rawString)).toEqual(expectedResult);
+      expect(getOnlyGitInserts(rawString)).toEqual(expectedResult);
     });
   });
 });

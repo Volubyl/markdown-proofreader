@@ -1,9 +1,10 @@
 const { pipe, filter, map, split, join, replace, trim } = require('lodash/fp');
 
-const isGitInsert = (input) => /^\+(\w| )/.test(input);
+// We are only intersted by strings beginning by '+' and not by those beginning by '++'
+const isGitInsert = (input) => /^\+[^+]/.test(input);
 const replaceGitInsertSign = (input) => replace('+', '', input);
 
-const getOnlyInserts = (chunk) => {
+const getOnlyGitInserts = (chunk) => {
   return pipe(
     split('\n'),
     map(trim),
@@ -16,5 +17,5 @@ const getOnlyInserts = (chunk) => {
 
 module.exports = {
   isGitInsert,
-  getOnlyInserts,
+  getOnlyGitInserts,
 };

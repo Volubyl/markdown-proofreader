@@ -1,5 +1,5 @@
 const { spawn } = require('child_process');
-const { Transform } = require('stream');
+const { Transform, Writable } = require('stream');
 const remark = require('remark');
 const strip = require('strip-markdown');
 
@@ -28,7 +28,19 @@ const removeMarkdownStream = new Transform({
   },
 });
 
+let body = '';
+
+const buildRequestBodyStream = new Writable({
+  write(chunk, encoding, callback) {
+    body += chunk.toString();
+    callback();
+  },
+});
+
 gitDiff.stdout
   .pipe(getGitInsertsStream)
   .pipe(removeMarkdownStream)
-  .pipe(process.stdout);
+  .pipe(buildRequestBodyStream)
+  .on('finish', () => {
+    console.log(body);
+  });

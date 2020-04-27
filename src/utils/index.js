@@ -36,11 +36,11 @@ const getNewFilePathListPipeline = () =>
     highland.map(trim)
   );
 
-const getNewFileContent = (shortSummaryStream, readFileStream) => {
+const getNewFileContentStream = (shortSummaryStream, readFileStream) => {
   if (!isNodeStream(shortSummaryStream))
     throw new Error('Invalid ShortSummary stream provided');
 
-  if (!isNodeStream(shortSummaryStream))
+  if (!isNodeStream(readFileStream))
     throw new Error('Invalid Read stream provided');
 
   const readFileWrapper = highland.wrapCallback(readFileStream);
@@ -64,7 +64,7 @@ const getNewlyInsertedText = () => {
   );
   return highland
     .concat(
-      getNewFileContent(gitStatusShortSummaryStream, readFile),
+      getNewFileContentStream(gitStatusShortSummaryStream, readFile),
       getDiffContentStream(gitDiffStream)
     )
     .pipe(geNewFileList)
@@ -75,5 +75,6 @@ const getNewlyInsertedText = () => {
 module.exports = {
   getNewlyInsertedText,
   getDiffContentStream,
+  getNewFileContentStream,
   getNewFilePathListPipeline,
 };

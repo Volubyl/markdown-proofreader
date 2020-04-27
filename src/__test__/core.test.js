@@ -2,7 +2,7 @@ const { Readable } = require('stream');
 const highland = require('highland');
 const {
   getDiffContentStream,
-  getNewFileContent,
+  getNewFileContentStream,
   getNewFilePathListPipeline,
 } = require('../utils');
 
@@ -47,17 +47,17 @@ describe('core', () => {
     });
   });
 
-  describe('getNewFileContent', () => {
+  describe('getNewFileContentStream', () => {
     it('should throw an error if an invalid stream provided as shortSummaryStream input ', () => {
       const invalidStream = 'not a stream';
-      expect(() => getNewFileContent(invalidStream, null)).toThrow(Error);
+      expect(() => getNewFileContentStream(invalidStream, null)).toThrow(Error);
     });
     it('should throw an error if an invalid stream provided as readFileStream input ', () => {
       const readableStream = Readable.from('foo');
       const invalidStream = 'not a stream';
-      expect(() => getNewFileContent(readableStream, invalidStream)).toThrow(
-        Error
-      );
+      expect(() =>
+        getNewFileContentStream(readableStream, invalidStream)
+      ).toThrow(Error);
     });
   });
 

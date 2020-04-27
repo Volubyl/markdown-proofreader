@@ -1,4 +1,4 @@
-const { isGitInsert, getOnlyGitInserts } = require('../utils');
+const { isGitInsert, isNewFile } = require('../utils');
 
 describe('Utils', () => {
   describe('selectOnlyInserts', () => {
@@ -36,24 +36,18 @@ describe('Utils', () => {
     });
   });
 
-  describe('getOnlyInserts', () => {
-    it('should return only the git inserts', () => {
-      const rawString = `
-          Hello
-          +Hello
-          --Hellow
-          + Hello world
-        `;
-
-      const expectedResult = 'Hello\nHello world';
-      expect(getOnlyGitInserts(rawString)).toEqual(expectedResult);
+  describe('isNewFile', () => {
+    it('should  return true if the file is new', () => {
+      const rawPath = 'A  src/__test__/fixtures/testfile2.md';
+      expect(isNewFile(rawPath)).toBe(true);
     });
-
-    it('should return only the git inserts -- works also with single string', () => {
-      const rawString = '+hello';
-
-      const expectedResult = 'hello';
-      expect(getOnlyGitInserts(rawString)).toEqual(expectedResult);
+    it('should  return false if the file has been modified (not new)', () => {
+      const rawPath = 'M  src/__test__/fixtures/testfile2.md';
+      expect(isNewFile(rawPath)).toBe(false);
+    });
+    it('should  return false if the file has been modified (not new) but the file path starts by A', () => {
+      const rawPath = 'M  Arc/__test__/fixtures/testfile2.md';
+      expect(isNewFile(rawPath)).toBe(false);
     });
   });
 });

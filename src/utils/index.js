@@ -1,6 +1,6 @@
 const { spawn } = require('child_process');
 const { readFile } = require('fs');
-const isStream = require('is-stream');
+const isNodeStream = require('is-stream');
 const highland = require('highland');
 const {
   isGitInsert,
@@ -13,8 +13,8 @@ const {
 } = require('./helpers');
 
 const getDiffContentStream = (gitDiffStream) => {
-  if (!isStream(gitDiffStream))
-    throw new Error('Invalid Git Diff  stream provided');
+  if (!isNodeStream(gitDiffStream))
+    throw new Error('Invalid Git Diff stream provided');
 
   const cleanDiffContent = highland.pipeline(
     highland.split(),
@@ -26,10 +26,10 @@ const getDiffContentStream = (gitDiffStream) => {
 };
 
 const getNewFileContent = (shortSummaryStream, readFileStream) => {
-  if (!isStream(shortSummaryStream))
+  if (!isNodeStream(shortSummaryStream))
     throw new Error('Invalid ShortSummary stream provided');
 
-  if (!isStream(shortSummaryStream))
+  if (!isNodeStream(shortSummaryStream))
     throw new Error('Invalid Read stream provided');
 
   const readFileWrapper = highland.wrapCallback(readFileStream);

@@ -18,12 +18,23 @@ const getDiffContentStream = (gitDiffStream) => {
 
   const cleanDiffContent = highland.pipeline(
     highland.split(),
+    highland.map(trim),
     highland.filter(isGitInsert),
-    highland.map(removeGitInsertSign)
+    highland.map(removeGitInsertSign),
+    highland.map(trim)
   );
 
   return highland(gitDiffStream).pipe(cleanDiffContent);
 };
+
+const getNewFilePathListPipeline = () =>
+  highland.pipeline(
+    highland.split(),
+    highland.map(trim),
+    highland.filter(isNewFile),
+    highland.map(replaceGitStatusSign),
+    highland.map(trim)
+  );
 
 const getNewFileContent = (shortSummaryStream, readFileStream) => {
   if (!isNodeStream(shortSummaryStream))
@@ -33,15 +44,9 @@ const getNewFileContent = (shortSummaryStream, readFileStream) => {
     throw new Error('Invalid Read stream provided');
 
   const readFileWrapper = highland.wrapCallback(readFileStream);
-  const geNewFileList = highland.pipeline(
-    highland.split(),
-    highland.map(trim),
-    highland.filter(isNewFile),
-    highland.map(replaceGitStatusSign),
-    highland.map(trim)
-  );
+
   return highland(shortSummaryStream)
-    .pipe(geNewFileList)
+    .pipe(getNewFilePathListPipeline())
     .map(readFileWrapper)
     .parallel(3)
     .split();
@@ -70,4 +75,5 @@ const getNewlyInsertedText = () => {
 module.exports = {
   getNewlyInsertedText,
   getDiffContentStream,
+  getNewFilePathListPipeline,
 };

@@ -1,4 +1,4 @@
-const { isGitInsert, isNewFile } = require('../utils');
+const { isGitInsert, isNewFile } = require('../utils/helpers');
 
 describe('Utils', () => {
   describe('selectOnlyInserts', () => {

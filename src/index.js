@@ -1,4 +1,4 @@
-const getNewlyInsertedText = require('./utils/stream.js');
+const { getNewlyInsertedText } = require('./utils');
 
 getNewlyInsertedText().then((data) => {
   console.log(data);

@@ -1,41 +1,73 @@
-const { replace, startsWith } = require('lodash/fp');
-const remark = require('remark');
-const strip = require('strip-markdown');
-
-// We are only intersted by strings beginning by '+' and not by those beginning by '++'
-const isGitInsert = (input) => /^\+[^+]/.test(input);
-
-// Git prepend the inserted lines with a '+' sign
-const removeGitInsertSign = (input) => replace('+', '', input);
-
-// We are only intersted by new files.
-// 'git status -s' (-s for short summary) prepend new files path with an A
-const isNewFile = (input) => startsWith('A', input);
-const replaceGitStatusSign = (input) => replace('A', '', input);
-
-// Proofreading APIs have a quota limited in number of characters.
-// We only want to check the content not the markdown layout
-const stripMarkdown = (markdownText) => {
-  let data;
-  remark()
-    .use(strip)
-    .process(markdownText, (err, cleanData) => {
-      if (err) throw err;
-      data = cleanData;
-    });
-
-  return String(data);
-};
-
-const trim = (x) => x.trim();
-const removeNewLign = (x) => x.replace('\n', '');
-
-module.exports = {
+const { spawn } = require('child_process');
+const { readFile } = require('fs');
+const isStream = require('is-stream');
+const highland = require('highland');
+const {
   isGitInsert,
   removeGitInsertSign,
-  removeNewLign,
-  isNewFile,
-  replaceGitStatusSign,
   stripMarkdown,
+  replaceGitStatusSign,
+  isNewFile,
   trim,
+  removeNewLign,
+} = require('./helpers');
+
+const getDiffContentStream = (gitDiffStream) => {
+  if (!isStream(gitDiffStream))
+    throw new Error('Invalid Git Diff  stream provided');
+
+  const cleanDiffContent = highland.pipeline(
+    highland.split(),
+    highland.filter(isGitInsert),
+    highland.map(removeGitInsertSign)
+  );
+
+  return highland(gitDiffStream).pipe(cleanDiffContent);
+};
+
+const getNewFileContent = (shortSummaryStream, readFileStream) => {
+  if (!isStream(shortSummaryStream))
+    throw new Error('Invalid ShortSummary stream provided');
+
+  if (!isStream(shortSummaryStream))
+    throw new Error('Invalid Read stream provided');
+
+  const readFileWrapper = highland.wrapCallback(readFileStream);
+  const geNewFileList = highland.pipeline(
+    highland.split(),
+    highland.map(trim),
+    highland.filter(isNewFile),
+    highland.map(replaceGitStatusSign),
+    highland.map(trim)
+  );
+  return highland(shortSummaryStream)
+    .pipe(geNewFileList)
+    .map(readFileWrapper)
+    .parallel(3)
+    .split();
+};
+
+const getNewlyInsertedText = () => {
+  const gitStatusShortSummaryStream = spawn('git', ['status', '**/*md', '-s'])
+    .stdout;
+
+  const gitDiffStream = spawn('git', ['diff', '--cached', '**/*.md']).stdout;
+
+  const geNewFileList = highland.pipeline(
+    highland.map(stripMarkdown),
+    highland.map(removeNewLign)
+  );
+  return highland
+    .concat(
+      getNewFileContent(gitStatusShortSummaryStream, readFile),
+      getDiffContentStream(gitDiffStream)
+    )
+    .pipe(geNewFileList)
+    .collect()
+    .toPromise(Promise);
+};
+
+module.exports = {
+  getNewlyInsertedText,
+  getDiffContentStream,
 };

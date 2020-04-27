@@ -28,10 +28,12 @@ const stripMarkdown = (markdownText) => {
 };
 
 const trim = (x) => x.trim();
+const removeNewLign = (x) => x.replace('\n', '');
 
 module.exports = {
   isGitInsert,
   removeGitInsertSign,
+  removeNewLign,
   isNewFile,
   replaceGitStatusSign,
   stripMarkdown,

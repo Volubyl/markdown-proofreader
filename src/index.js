@@ -1,3 +1,5 @@
-const getBodyContent = require('./utils/stream.js');
+const getNewlyInsertedText = require('./utils/stream.js');
 
-getBodyContent();
+getNewlyInsertedText().then((data) => {
+  console.log(data);
+});

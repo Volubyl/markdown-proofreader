@@ -1,5 +1,6 @@
 const { spawn } = require('child_process');
 const { readFile } = require('fs');
+const isStream = require('is-stream');
 const highland = require('highland');
 const {
   isGitInsert,
@@ -8,10 +9,12 @@ const {
   replaceGitStatusSign,
   isNewFile,
   trim,
+  removeNewLign,
 } = require('.');
 
-const getDiffContentStream = () => {
-  const gitDiffStream = spawn('git', ['diff', '--cached', '**/*.md']).stdout;
+const getDiffContentStream = (gitDiffStream) => {
+  if (!isStream(gitDiffStream))
+    throw new Error('Invalid Git Diff  stream provided');
 
   const cleanDiffContent = highland.pipeline(
     highland.split(),
@@ -22,15 +25,14 @@ const getDiffContentStream = () => {
   return highland(gitDiffStream).pipe(cleanDiffContent);
 };
 
-const getNewFileContent = () => {
-  const getGitStatusShortSummaryStream = spawn('git', [
-    'status',
-    '**/*md',
-    '-s',
-  ]).stdout;
+const getNewFileContent = (shortSummaryStream, readFileStream) => {
+  if (!isStream(shortSummaryStream))
+    throw new Error('Invalid ShortSummary stream provided');
 
-  const readFileWrapper = highland.wrapCallback(readFile);
+  if (!isStream(shortSummaryStream))
+    throw new Error('Invalid Read stream provided');
 
+  const readFileWrapper = highland.wrapCallback(readFileStream);
   const geNewFileList = highland.pipeline(
     highland.split(),
     highland.map(trim),
@@ -38,24 +40,31 @@ const getNewFileContent = () => {
     highland.map(replaceGitStatusSign),
     highland.map(trim)
   );
-
-  return highland(getGitStatusShortSummaryStream)
+  return highland(shortSummaryStream)
     .pipe(geNewFileList)
     .map(readFileWrapper)
     .parallel(3)
     .split();
 };
 
-const getBodyContent = () =>
-  highland
-    .concat(getNewFileContent(), getDiffContentStream())
-    .map(stripMarkdown)
-    .map((item) => {
-      return item.replace('\n', '');
-    })
-    .collect()
-    .toCallback((err, result) => {
-      console.log(result);
-    });
+const getNewlyInsertedText = () => {
+  const gitStatusShortSummaryStream = spawn('git', ['status', '**/*md', '-s'])
+    .stdout;
 
-module.exports = getBodyContent;
+  const gitDiffStream = spawn('git', ['diff', '--cached', '**/*.md']).stdout;
+
+  const geNewFileList = highland.pipeline(
+    highland.map(stripMarkdown),
+    highland.map(removeNewLign)
+  );
+  return highland
+    .concat(
+      getNewFileContent(gitStatusShortSummaryStream, readFile),
+      getDiffContentStream(gitDiffStream)
+    )
+    .pipe(geNewFileList)
+    .collect()
+    .toPromise(Promise);
+};
+
+module.exports = getNewlyInsertedText;

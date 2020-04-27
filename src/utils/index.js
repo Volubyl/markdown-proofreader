@@ -36,14 +36,16 @@ const getNewFilePathListPipeline = () =>
     highland.map(trim)
   );
 
-const getNewFileContentStream = (shortSummaryStream, readFileStream) => {
+const getNewFileContentStream = (shortSummaryStream, readFileFunction) => {
   if (!isNodeStream(shortSummaryStream))
     throw new Error('Invalid ShortSummary stream provided');
 
-  if (!isNodeStream(readFileStream))
-    throw new Error('Invalid Read stream provided');
+  const isFunction = typeof readFileFunction === 'function';
 
-  const readFileWrapper = highland.wrapCallback(readFileStream);
+  if (!isFunction)
+    throw new Error('The file reader provided is not a function');
+
+  const readFileWrapper = highland.wrapCallback(readFileFunction);
 
   return highland(shortSummaryStream)
     .pipe(getNewFilePathListPipeline())

@@ -48,11 +48,11 @@ describe('core', () => {
   });
 
   describe('getNewFileContentStream', () => {
-    it('should throw an error if an invalid stream provided as shortSummaryStream input ', () => {
+    it('should throw an error if an invalid stream provided as shortSummaryStream input', () => {
       const invalidStream = 'not a stream';
       expect(() => getNewFileContentStream(invalidStream, null)).toThrow(Error);
     });
-    it('should throw an error if an invalid stream provided as readFileStream input ', () => {
+    it('should throw an error if an invalid file reader function is provided as argument', () => {
       const readableStream = Readable.from('foo');
       const invalidStream = 'not a stream';
       expect(() =>

@@ -64,11 +64,16 @@ const getNewlyInsertedText = () => {
     highland.map(stripMarkdown),
     highland.map(removeNewLign)
   );
-  return highland
-    .concat(
-      getNewFileContentStream(gitStatusShortSummaryStream, readFile),
-      getDiffContentStream(gitDiffStream)
-    )
+  // return highland
+  //   .concat(
+  //     getNewFileContentStream(gitStatusShortSummaryStream, readFile),
+  //     getDiffContentStream(gitDiffStream)
+  //   )
+  //   .pipe(geNewFileList)
+  //   .collect()
+  //   .toPromise(Promise);
+
+  return getDiffContentStream(gitDiffStream)
     .pipe(geNewFileList)
     .collect()
     .toPromise(Promise);

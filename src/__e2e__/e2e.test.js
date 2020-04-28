@@ -18,7 +18,7 @@ describe('End to end test', () => {
 
   const lastLine = 'very important secret';
 
-  describe('New File', () => {
+  describe('When a new file has been created', () => {
     const testFileContent = [
       '# First Test file',
       '``` few lines of code ```',
@@ -42,7 +42,7 @@ describe('End to end test', () => {
     });
   });
 
-  describe('Udated file', () => {
+  describe('When a file has been updated', () => {
     const newline = `a nice new text`;
     beforeAll(() => {
       commitTestFile('e2e test -- add previoulsy created file');

@@ -1,4 +1,3 @@
-const { replace, startsWith } = require('lodash/fp');
 const remark = require('remark');
 const strip = require('strip-markdown');
 
@@ -6,12 +5,7 @@ const strip = require('strip-markdown');
 const isGitInsert = (input) => /^\+[^+]/.test(input);
 
 // Git prepend the inserted lines with a '+' sign
-const removeGitInsertSign = (input) => replace('+', '', input);
-
-// We are only intersted by new files.
-// 'git status -s' (-s for short summary) prepend new files path with an A
-const isNewFile = (input) => startsWith('A', input);
-const replaceGitStatusSign = (input) => replace('A', '', input);
+const removeGitInsertSign = (input) => input.replace('+', '');
 
 // Proofreading APIs have a quota limited in number of characters.
 // We only want to check the content not the markdown layout
@@ -34,8 +28,6 @@ module.exports = {
   isGitInsert,
   removeGitInsertSign,
   removeNewLign,
-  isNewFile,
-  replaceGitStatusSign,
   stripMarkdown,
   trim,
 };

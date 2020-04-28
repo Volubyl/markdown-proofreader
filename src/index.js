@@ -1,5 +1,5 @@
-const { getNewlyInsertedText } = require('./utils');
+const { getReport } = require('./utils/core');
 
-getNewlyInsertedText().then((data) => {
+getReport().then((data) => {
   console.log(data);
 });

@@ -7,7 +7,7 @@ const {
   appendTextToTestFile,
   getCurrentBranchName,
   commitTestFile,
-} = require('./scripts/setup-e2e');
+} = require('./utils');
 const { getNewlyInsertedText } = require('../utils');
 
 describe('End to end test', () => {

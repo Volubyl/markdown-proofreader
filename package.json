@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "npm run test unit && npm run test:e2e",
-    "test:unit": "jest src/**/*.test.js",
-    "test:e2e": "jest src/__test__/main.e2e.js",
+    "test:unit": "jest src/__test__/**",
+    "test:e2e": "jest src/__e2e__/**",
     "start:dev": "node src/index.js"
   },
   "keywords": [],

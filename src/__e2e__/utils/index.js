@@ -5,11 +5,10 @@ const { exec, execSync } = require('child_process');
 const filePath = './src/fixtures/test-file.md';
 const testBranchName = 'e2e-test-branch';
 
+// Outch that's a real nasty side effect here :-(
 let currentBranchName;
-
 const getCurrentBranchName = () => {
   currentBranchName = execSync(`git rev-parse --abbrev-ref HEAD`);
-
   return currentBranchName.toString();
 };
 

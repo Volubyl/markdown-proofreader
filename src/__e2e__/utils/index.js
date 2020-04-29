@@ -2,7 +2,8 @@ const fsExtra = require('fs-extra');
 const fs = require('fs');
 const { exec, execSync } = require('child_process');
 
-const filePath = './src/fixtures/test-file.md';
+const e2eTestFolder = './src/e2e_files';
+const filePath = `${e2eTestFolder}/test-file.md`;
 const testBranchName = 'e2e-test-branch';
 
 // Outch that's a real nasty side effect here :-(
@@ -47,7 +48,7 @@ const untrackTestFile = () => {
 };
 
 const removeFixtureFolder = () => {
-  fsExtra.removeSync('./src/fixtures/');
+  fsExtra.removeSync(e2eTestFolder);
 };
 
 module.exports = {

@@ -1,14 +1,31 @@
 const { spawn } = require('child_process');
 const isNodeStream = require('is-stream');
 const highland = require('highland');
-const fetch = require('node-fetch');
-const {
-  isGitInsert,
-  removeGitInsertSign,
-  stripMarkdown,
-  trim,
-  removeNewLign,
-} = require('./helpers');
+const remark = require('remark');
+const strip = require('strip-markdown');
+
+// We are only intersted by strings beginning by '+' and not by those beginning by '++'
+const isGitInsert = (input) => /^\+[^+]/.test(input);
+
+// Git prepend the inserted lines with a '+' sign
+const removeGitInsertSign = (input) => input.replace('+', '');
+
+// Proofreading APIs have a quota limited in number of characters.
+// We only want to check the content not the markdown layout
+const stripMarkdown = (markdownText) => {
+  let data;
+  remark()
+    .use(strip)
+    .process(markdownText, (err, cleanData) => {
+      if (err) throw err;
+      data = cleanData;
+    });
+
+  return String(data);
+};
+
+const trim = (x) => x.trim();
+const removeNewLign = (x) => x.replace('\n', '');
 
 const getDiffContentStream = (gitDiffStream) => {
   if (!isNodeStream(gitDiffStream)) throw new Error('Invalid stream provided');
@@ -27,39 +44,19 @@ const getDiffContentStream = (gitDiffStream) => {
 const getNewlyInsertedText = () => {
   const gitDiffStream = spawn('git', ['diff', '--cached', '**/*.md']).stdout;
 
-  const geNewFileList = highland.pipeline(
+  const newFileListPipeline = highland.pipeline(
     highland.map(stripMarkdown),
     highland.map(removeNewLign)
   );
 
   return getDiffContentStream(gitDiffStream)
-    .pipe(geNewFileList)
+    .pipe(newFileListPipeline)
     .collect()
     .toPromise(Promise);
 };
 
-const getGrammarBotReport = async (rawContent) => {
-  const report = await fetch('http://api.grammarbot.io/v2/check', {
-    method: 'post',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      api_key: 'KS9C5N3Y',
-      language: 'en_US',
-      text: rawContent,
-    }),
-  });
-
-  return report.json();
-};
-
-const getReport = async () => {
-  const insertedText = getNewlyInsertedText().join('\n');
-  const report = getGrammarBotReport(insertedText);
-  console.log(report);
-};
-
 module.exports = {
   getNewlyInsertedText,
+  isGitInsert,
   getDiffContentStream,
-  getReport,
 };

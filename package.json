@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "npm run test unit && npm run test:e2e",
+    "test": "npm run test:unit && npm run test:e2e",
     "test:unit": "jest src/__test__/**",
     "test:e2e": "jest src/__e2e__/**",
     "start:dev": "node src/index.js"
@@ -23,7 +23,10 @@
     "prettier": "^2.0.2"
   },
   "dependencies": {
+    "chalk": "^4.0.0",
+    "commander": "^5.1.0",
     "fs-extra": "^9.0.0",
+    "grammarbot": "^1.0.3",
     "highland": "^2.13.5",
     "is-stream": "^2.0.0",
     "node-fetch": "^2.6.0",

@@ -67,4 +67,3 @@ One point for hiring real humans ...
 
 Feel free to open an issue or a PR
 
-Typo hre

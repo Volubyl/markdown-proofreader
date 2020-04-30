@@ -4,14 +4,14 @@ const { program } = require('commander');
 
 const {
   displayReport,
-  getReport,
+  generateReport,
   displaySuccessMessage,
   displayErrorMessage,
-} = require('./utils/report');
+} = require('./report');
 
 const buildAndDisplayReport = async (apiKey) => {
   try {
-    const report = await getReport(apiKey);
+    const report = await generateReport(apiKey);
     if (report.length === 0) {
       displaySuccessMessage();
       process.exit(0);

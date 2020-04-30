@@ -23,12 +23,8 @@ const getGrammarBotReport = async (rawContent, apikey) => {
   return bot.checkAsync(rawContent);
 };
 
-const getReport = async (apikey) => {
+const generateReport = async (apikey) => {
   const insertedText = await getNewlyInsertedText();
-
-  insertedText.forEach((element) => {
-    log(chalk.green(element));
-  });
 
   if (insertedText.length === 0) return [];
 
@@ -82,7 +78,7 @@ const displayErrorMessage = (e) => {
 
 module.exports = {
   extractRelevantInfosFromCertBotReport,
-  getReport,
+  generateReport,
   displayReport,
   formatReplacements,
   formatMessage,

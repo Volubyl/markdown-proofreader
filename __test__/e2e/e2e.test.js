@@ -8,7 +8,7 @@ const {
   getCurrentBranchName,
   commitTestFile,
 } = require('./utils');
-const { getNewlyInsertedText } = require('../utils/core');
+const { getNewlyInsertedText } = require('../../src/core');
 
 describe('End to end test', () => {
   describe('getNewlyInsertedText', () => {

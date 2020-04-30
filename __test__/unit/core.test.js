@@ -1,6 +1,6 @@
 const { Readable } = require('stream');
 const highland = require('highland');
-const { getDiffContentStream, isGitInsert } = require('../utils/core');
+const { getDiffContentStream, isGitInsert } = require('../../src/core');
 
 describe('core', () => {
   describe('selectOnlyInserts', () => {

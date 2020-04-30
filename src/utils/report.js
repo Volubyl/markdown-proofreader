@@ -26,6 +26,10 @@ const getGrammarBotReport = async (rawContent, apikey) => {
 const getReport = async (apikey) => {
   const insertedText = await getNewlyInsertedText();
 
+  insertedText.forEach((element) => {
+    log(chalk.green(element));
+  });
+
   if (insertedText.length === 0) return [];
 
   const report = await getGrammarBotReport(insertedText.join('\n'), apikey);

@@ -66,3 +66,5 @@ One point for hiring real humans ...
 `markdown-proofreader` is a baby project in its early stage. Few bugs lies certainly in the shadow and many functionalities are certainly missing.
 
 Feel free to open an issue or a PR
+
+Typo hre

@@ -42,7 +42,7 @@ const getDiffContentStream = (gitDiffStream) => {
 };
 
 const getNewlyInsertedText = () => {
-  const gitDiffStream = spawn('git', ['diff', '--cached', '**/*.md']).stdout;
+  const gitDiffStream = spawn('git', ['diff', '--cached', '*.md']).stdout;
 
   const newFileListPipeline = highland.pipeline(
     highland.map(stripMarkdown),

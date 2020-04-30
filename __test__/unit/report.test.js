@@ -7,7 +7,7 @@ const {
   formatMessage,
   formatReport,
   formatSentence,
-} = require('../utils/report');
+} = require('../../src/report');
 
 describe('Report', () => {
   describe('extractRelevantInfosFromCertBotReport', () => {

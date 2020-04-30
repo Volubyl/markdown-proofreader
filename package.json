@@ -7,12 +7,16 @@
     "markdownproofreader": "./src/index.js"
   },
   "scripts": {
-    "test": "npm run test:unit",
-    "test:unit": "jest src/__test__/**",
-    "test:e2e": "jest src/__e2e__/**",
-    "start:dev": "node src/index.js"
+    "test": "npm run lint && npm run test:unit",
+    "test:unit": "jest __test__/unit/**",
+    "test:e2e": "jest __test__/e2e/**",
+    "start:dev": "node src/index.js",
+    "lint" : "eslint --ext .js src/ __test__/"
   },
   "keywords": [],
+  "files": [
+    "./src/"
+  ],
   "author": "",
   "license": "ISC",
   "devDependencies": {

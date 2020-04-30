@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "npm run test:unit && npm run test:e2e",
+    "test": "npm run test:unit",
     "test:unit": "jest src/__test__/**",
     "test:e2e": "jest src/__e2e__/**",
     "start:dev": "node src/index.js"

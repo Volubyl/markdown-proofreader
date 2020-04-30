@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const { program } = require('commander');
 
 const {
@@ -23,7 +25,7 @@ const buildAndDisplayReport = async (apiKey) => {
 };
 
 program
-  .name('markdown-proofreader')
+  .name('markdownproofreader')
   .version('0.O.O')
   .requiredOption('-key, --API_KEY <key>', 'a valid grammar bot key');
 

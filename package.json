@@ -3,6 +3,9 @@
   "version": "0.0.1-0",
   "description": "",
   "main": "index.js",
+  "bin": {
+    "markdownproofreader": "./src/index.js"
+  },
   "scripts": {
     "test": "npm run test:unit",
     "test:unit": "jest src/__test__/**",

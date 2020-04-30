@@ -35,7 +35,6 @@
     "grammarbot": "^1.0.3",
     "highland": "^2.13.5",
     "is-stream": "^2.0.0",
-    "node-fetch": "^2.6.0",
     "remark": "^12.0.0",
     "strip-markdown": "^3.1.2"
   }

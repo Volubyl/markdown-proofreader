@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "bin": {
-    "markdownproofreader": "./src/index.js"
+    "markdown-proofreader": "./src/index.js"
   },
   "scripts": {
     "test": "npm run lint && npm run test:unit",

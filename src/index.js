@@ -10,6 +10,7 @@ const {
 } = require('./utils/report');
 
 const buildAndDisplayReport = async (apiKey) => {
+  console.log('foo');
   try {
     const report = await getReport(apiKey);
     if (report.length === 0) {

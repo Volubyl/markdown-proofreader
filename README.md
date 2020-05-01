@@ -17,7 +17,7 @@ I was looking for a simple solution to check the syntax and grammar of those not
 
 **Warning** :
 - Markdown Proofreader requires you use `git` as version control software.
-- Grammar Bot requires you to provide a valid 'API_ACCESS_KEY'. You can get an API Key by registering to Grammar Bot (it's free)
+- Grammar Bot requires you to provide a valid 'API_ACCESS_KEY'. You can get an API Key by registering to Grammar Bot (it's free).
 
 Run `npm install markdown-proofreader`.
 

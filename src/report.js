@@ -43,15 +43,18 @@ const formatSentence = (sentence) =>
   `${chalk.bold(String.fromCharCode(8227))} Sentence: ${sentence}`;
 
 const formatReport = (report) =>
-  report.reduce((prev, current) => {
-    const formatedReport = `${formatMessage(current.message)}\n${formatSentence(
-      current.sentence
-    )}\nPossible replacements: ${formatReplacements(current.replacements)}`;
+  `${formatMessage(report.message)}\n${formatSentence(
+    report.sentence
+  )}\n\n${chalk.underline('Possible replacements:')} ${formatReplacements(
+    report.replacements
+  )}`;
 
+const reduceReport = (report) =>
+  report.reduce((prev, current) => {
     if (!prev) {
-      return formatedReport;
+      return formatReport(current);
     }
-    return `${prev}\n${formatedReport}`;
+    return `${prev}\n\n${formatReport(current)}`;
   }, '');
 
 const displayReport = (report) => {
@@ -59,7 +62,7 @@ const displayReport = (report) => {
   const title = chalk.red.bold('Oh snap we found few typos/grammar errors');
 
   log(
-    `${title}\n\nBut don't worry here is your report:\n${formatReport(
+    `${title}\n\nBut don't worry here is your report:\n\n${reduceReport(
       workingReport
     )}`
   );
@@ -83,7 +86,7 @@ module.exports = {
   formatReplacements,
   formatMessage,
   formatSentence,
-  formatReport,
+  reduceReport,
   displayErrorMessage,
   displaySuccessMessage,
 };

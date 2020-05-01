@@ -5,7 +5,7 @@ const {
   extractRelevantInfosFromGrammarBotReport,
   formatReplacements,
   formatMessage,
-  formatReport,
+  reduceReport,
   formatSentence,
 } = require('../../src/report');
 
@@ -66,18 +66,25 @@ describe('Report', () => {
       const value = 'there';
       const report = getReport(message, value, sentence)[0];
 
+      // This is a very naive and not really maintenable way to test the UI
+      // Here snapshot seems to be useless maybe should I do something like here
+      // https://github.com/chalk/chalk/blob/master/test/chalk.js
+
       // Should look like this
       // ✗ A nice message with typos
       // ‣ Sentence: Their is a mistake here
+      //
       // Possible replacements: there
 
       const expectedResult = `${chalk.red(
         String.fromCharCode(10007)
       )} ${chalk.bold(message)}\n${chalk.bold(
         String.fromCharCode(8227)
-      )} Sentence: ${sentence}\nPossible replacements: ${value}`;
+      )} Sentence: ${sentence}\n\n${chalk.underline(
+        'Possible replacements:'
+      )} ${value}`;
 
-      expect(formatReport([report])).toBe(expectedResult);
+      expect(reduceReport([report])).toBe(expectedResult);
     });
   });
 });

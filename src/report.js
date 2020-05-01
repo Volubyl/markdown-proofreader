@@ -3,8 +3,8 @@ const chalk = require('chalk');
 const { getNewlyInsertedText } = require('./core');
 
 const { log, error } = console;
-const extractRelevantInfosFromCertBotReport = (certbotReport) => {
-  const { matches } = certbotReport;
+const extractRelevantInfosFromGrammarBotReport = (grammarBotReport) => {
+  const { matches } = grammarBotReport;
 
   return matches.map(({ message, replacements, sentence }) => {
     return {
@@ -30,7 +30,7 @@ const generateReport = async (apikey) => {
 
   const report = await getGrammarBotReport(insertedText.join('\n'), apikey);
 
-  return extractRelevantInfosFromCertBotReport(report);
+  return extractRelevantInfosFromGrammarBotReport(report);
 };
 
 const formatReplacements = (replacements) =>
@@ -77,7 +77,7 @@ const displayErrorMessage = (e) => {
 };
 
 module.exports = {
-  extractRelevantInfosFromCertBotReport,
+  extractRelevantInfosFromGrammarBotReport,
   generateReport,
   displayReport,
   formatReplacements,

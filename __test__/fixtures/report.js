@@ -1,32 +1,26 @@
-const getReport = (message, value, sentence) => {
+const getReplacement = (replacementValue) => {
+  return {
+    value: replacementValue,
+  };
+};
+
+const getReport = (message, sentence, replacementValue) => {
   return [
     {
       message,
-      replacements: [
-        {
-          value,
-        },
-      ],
+      replacements: replacementValue ? [getReplacement(replacementValue)] : [],
       sentence,
     },
     {
       message,
-      replacements: [
-        {
-          value,
-        },
-      ],
+      replacements: replacementValue ? [getReplacement(replacementValue)] : [],
       sentence,
     },
     {
       message,
-      replacements: [
-        {
-          value,
-        },
-      ],
+      replacements: replacementValue ? [getReplacement(replacementValue)] : [],
       sentence,
     },
   ];
 };
-module.exports = getReport;
+module.exports = { getReport, getReplacement };

@@ -1,5 +1,5 @@
 const chalk = require('chalk');
-const getReport = require('../fixtures/report');
+const { getReport } = require('../fixtures/report');
 const getGrammarBotReport = require('../fixtures/grammarBotReport');
 const {
   extractRelevantInfosFromGrammarBotReport,
@@ -7,11 +7,12 @@ const {
   formatMessage,
   reduceReport,
   formatSentence,
+  filterReplacement,
 } = require('../../src/report');
 
 describe('Report', () => {
   describe('extractRelevantInfosFromGrammarBotReport', () => {
-    it('should return a report from certBot report', () => {
+    it('should return a report from grammarbot report', () => {
       const message =
         "Statistics suggests that 'there' (as in 'Is there an answer?') might be the correct word here, not 'their' (as in 'It’s not their fault.'). Please check.";
       const proposedReplacementValue = 'there';
@@ -20,19 +21,17 @@ describe('Report', () => {
 
       const grammarBotReport = getGrammarBotReport(
         message,
-        proposedReplacementValue,
-        sentence
+        sentence,
+        proposedReplacementValue
       );
 
       const expectedResut = getReport(
         message,
-        proposedReplacementValue,
-        sentence
+        sentence,
+        proposedReplacementValue
       );
-
-      expect(
-        extractRelevantInfosFromGrammarBotReport(grammarBotReport)
-      ).toEqual(expectedResut);
+      const result = extractRelevantInfosFromGrammarBotReport(grammarBotReport);
+      expect(result).toEqual(expectedResut);
     });
   });
 
@@ -41,9 +40,27 @@ describe('Report', () => {
       const value1 = 'there';
       const value2 = 'is';
 
-      const replacements = [{ value: value1 }, { value: value2 }];
+      const replacements = [value1, value2];
 
       expect(formatReplacements(replacements)).toBe(`${value1}, ${value2}`);
+    });
+
+    it('should format replacement values to be displayable -- one replacement case', () => {
+      const value1 = 'there';
+
+      const replacements = [value1];
+
+      expect(formatReplacements(replacements)).toBe(`${value1}`);
+    });
+
+    it('should filter the withe space and keep the value', () => {
+      const replacements = [
+        { value: 'foo' },
+        { value: '' },
+        { value: '      ' },
+      ];
+
+      expect(filterReplacement(replacements)).toEqual(['foo']);
     });
 
     it('should format message to be displayable', () => {
@@ -63,8 +80,8 @@ describe('Report', () => {
     it('should format the report to be displayable', () => {
       const message = 'A nice message with typos';
       const sentence = 'Their is a mistake here';
-      const value = 'there';
-      const report = getReport(message, value, sentence)[0];
+      const replacementValue = 'there';
+      const report = getReport(message, sentence, replacementValue)[0];
 
       // This is a very naive and not really maintenable way to test the UI
       // Here snapshot seems to be useless maybe should I do something like here
@@ -82,7 +99,32 @@ describe('Report', () => {
         String.fromCharCode(8227)
       )} Sentence: ${sentence}\n\n${chalk.underline(
         'Possible replacements:'
-      )} ${value}`;
+      )} ${replacementValue}`;
+
+      expect(reduceReport([report])).toBe(expectedResult);
+    });
+
+    it('should format the report to be displayable -- no available replacement', () => {
+      const message = 'A nice message with typos';
+      const sentence = 'Their is a mistake here';
+
+      const report = getReport(message, sentence)[0];
+
+      // This is a very naive and not really maintenable way to test the UI
+      // Here snapshot seems to be useless maybe should I do something like here
+      // https://github.com/chalk/chalk/blob/master/test/chalk.js
+
+      // Should look like this
+      // ✗ A nice message with typos
+      // ‣ Sentence: Their is a mistake here
+      //
+      // Possible replacements: there
+
+      const expectedResult = `${chalk.red(
+        String.fromCharCode(10007)
+      )} ${chalk.bold(message)}\n${chalk.bold(
+        String.fromCharCode(8227)
+      )} Sentence: ${sentence}`;
 
       expect(reduceReport([report])).toBe(expectedResult);
     });

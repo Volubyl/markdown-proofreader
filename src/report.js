@@ -33,8 +33,16 @@ const generateReport = async (apikey) => {
   return extractRelevantInfosFromGrammarBotReport(report);
 };
 
-const formatReplacements = (replacements) =>
-  replacements.map((item) => item.value).join(', ');
+const filterReplacement = (replacements) =>
+  replacements
+    .map((item) => item.value)
+    .map((item) => item.trim())
+    .filter((item) => item);
+
+const formatReplacements = (replacements) => {
+  if (replacements.length > 0) return replacements.join(', ');
+  return replacements[0];
+};
 
 const formatMessage = (message) =>
   `${chalk.red(String.fromCharCode(10007))} ${chalk.bold(message)}`;
@@ -42,12 +50,19 @@ const formatMessage = (message) =>
 const formatSentence = (sentence) =>
   `${chalk.bold(String.fromCharCode(8227))} Sentence: ${sentence}`;
 
-const formatReport = (report) =>
-  `${formatMessage(report.message)}\n${formatSentence(
+const formatReport = (report) => {
+  const baseReport = `${formatMessage(report.message)}\n${formatSentence(
     report.sentence
-  )}\n\n${chalk.underline('Possible replacements:')} ${formatReplacements(
-    report.replacements
   )}`;
+
+  const filtredReplacement = filterReplacement(report.replacements);
+
+  if (filtredReplacement.length === 0) return baseReport;
+
+  return `${baseReport}\n\n${chalk.underline(
+    'Possible replacements:'
+  )} ${formatReplacements(filtredReplacement)}`;
+};
 
 const reduceReport = (report) =>
   report.reduce((prev, current) => {
@@ -87,6 +102,7 @@ module.exports = {
   formatMessage,
   formatSentence,
   reduceReport,
+  filterReplacement,
   displayErrorMessage,
   displaySuccessMessage,
 };

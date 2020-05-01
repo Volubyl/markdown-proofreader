@@ -1,4 +1,4 @@
-const getGrammarBotReport = (message, proposedReplacementValue, sentence) => {
+const getGrammarBotReport = (message, sentence, proposedReplacementValue) => {
   return {
     software: {
       name: 'GrammarBot',

@@ -1,6 +1,9 @@
 const Grammarbot = require('grammarbot');
 const chalk = require('chalk');
-const { getNewlyInsertedText } = require('./core');
+const {
+  getContentForNewAndModifiedFiles,
+  getContentForMatchingFiles,
+} = require('./core');
 
 const { log, error } = console;
 const extractRelevantInfosFromGrammarBotReport = (grammarBotReport) => {
@@ -23,8 +26,18 @@ const getGrammarBotReport = async (rawContent, apikey) => {
   return bot.checkAsync(rawContent);
 };
 
-const generateReport = async (apikey) => {
-  const insertedText = await getNewlyInsertedText();
+const generateReportForNewAndModifiedFiles = async (apikey) => {
+  const insertedText = await getContentForNewAndModifiedFiles();
+
+  if (insertedText.length === 0) return [];
+
+  const report = await getGrammarBotReport(insertedText.join('\n'), apikey);
+
+  return extractRelevantInfosFromGrammarBotReport(report);
+};
+
+const generateReportForMatchingFiles = async (apikey, glob = '*') => {
+  const insertedText = await getContentForMatchingFiles(glob);
 
   if (insertedText.length === 0) return [];
 
@@ -96,7 +109,8 @@ const displayErrorMessage = (e) => {
 
 module.exports = {
   extractRelevantInfosFromGrammarBotReport,
-  generateReport,
+  generateReportForNewAndModifiedFiles,
+  generateReportForMatchingFiles,
   displayReport,
   formatReplacements,
   formatMessage,

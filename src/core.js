@@ -3,6 +3,9 @@ const isNodeStream = require('is-stream');
 const highland = require('highland');
 const remark = require('remark');
 const strip = require('strip-markdown');
+const fs = require('fs');
+const fg = require('fast-glob');
+const path = require('path');
 
 // We are only intersted by strings beginning by '+' and not by those beginning by '++'
 const isGitInsert = (input) => /^\+[^+]/.test(input);
@@ -27,6 +30,35 @@ const stripMarkdown = (markdownText) => {
 const trim = (x) => x.trim();
 const removeNewLign = (x) => x.replace('\n', '');
 
+// const getNewFilePathListPipeline = () =>
+//   highland.pipeline(
+//     highland.split(),
+//     highland.map(trim),
+//     highland.filter(isNewFile),
+//     highland.map(replaceGitStatusSign),
+//     highland.map(trim)
+//   );
+
+// const getFileContent = (shortSummaryStream) => {
+//   if (!isNodeStream(shortSummaryStream))
+//     throw new Error('Invalid ShortSummary stream provided');
+
+//   const readFileWrapper = highland.wrapCallback(readFile);
+
+//   return highland(shortSummaryStream)
+//     .pipe(getNewFilePathListPipeline())
+//     .map(readFileWrapper)
+//     .parallel(3)
+//     .split();
+// };
+
+const getCleanContentPipleLine = () => {
+  return highland.pipeline(
+    highland.map(stripMarkdown),
+    highland.map(removeNewLign)
+  );
+};
+
 const getDiffContentStream = (gitDiffStream) => {
   if (!isNodeStream(gitDiffStream)) throw new Error('Invalid stream provided');
 
@@ -41,22 +73,40 @@ const getDiffContentStream = (gitDiffStream) => {
   return highland(gitDiffStream).pipe(cleanDiffContent);
 };
 
-const getNewlyInsertedText = () => {
+const getContentForNewAndModifiedFiles = () => {
   const gitDiffStream = spawn('git', ['diff', '--cached', '*.md']).stdout;
-
-  const newFileListPipeline = highland.pipeline(
-    highland.map(stripMarkdown),
-    highland.map(removeNewLign)
-  );
-
   return getDiffContentStream(gitDiffStream)
-    .pipe(newFileListPipeline)
+    .pipe(getCleanContentPipleLine())
     .collect()
     .toPromise(Promise);
 };
 
+const getMarkdownFilePaths = async () => {
+  return fg('**/*.md', { ignore: 'node_modules' });
+};
+
+const getContentFromFiles = (getFilePathsListFunction) => async () => {
+  const readFile = highland.wrapCallback(fs.readFile);
+  const matchingFilesPath = await getFilePathsListFunction();
+
+  return highland(matchingFilesPath)
+    .map(readFile)
+    .stopOnError((err) => {
+      throw new Error(err);
+    })
+    .series()
+    .map(String)
+    .collect()
+    .toPromise(Promise);
+};
+
+const getContentFromMarkdownFiles = getContentFromFiles(getMarkdownFilePaths);
+
 module.exports = {
-  getNewlyInsertedText,
+  getContentForNewAndModifiedFiles,
   isGitInsert,
+  getCleanContentPipleLine,
+  getContentFromMarkdownFiles,
+  getContentFromFiles,
   getDiffContentStream,
 };

@@ -1,6 +1,13 @@
 const { Readable } = require('stream');
 const highland = require('highland');
-const { getDiffContentStream, isGitInsert } = require('../../src/core');
+const {
+  getDiffContentStream,
+  isGitInsert,
+  getCleanContentPipleLine,
+  getContentFromFiles,
+} = require('../../src/core');
+
+const { getFixtureFolderPath } = require('../utils');
 
 describe('core', () => {
   describe('selectOnlyInserts', () => {
@@ -75,6 +82,52 @@ describe('core', () => {
     it('should throw an error if an invalid stream provided as input ', () => {
       const invalidStream = 'not a stream';
       expect(() => getDiffContentStream(invalidStream)).toThrow(Error);
+    });
+  });
+
+  describe('getCleanContentPipleLine', () => {
+    it('should remove markdown sign and new line mark', async () => {
+      // Here the goal is not to test if we remove all the markdown
+      // The library is already tested
+      const title = "I'm a markdownText";
+      const paragraph = "I'm the secondParagraph";
+      const markownContent = [`### ${title}\n`, `${paragraph}`];
+
+      const readableStream = Readable.from(markownContent);
+      const result = await highland(readableStream)
+        .pipe(getCleanContentPipleLine())
+        .collect()
+        .toPromise(Promise);
+
+      expect(result).toEqual([title, paragraph]);
+    });
+  });
+
+  describe('getContentFromFiles', () => {
+    it('should remove markdown sign and new line mark', async () => {
+      const fixtureFolderPath = getFixtureFolderPath();
+      const fakeFilePath = `${fixtureFolderPath}/fakeFiles/simple-file.md`;
+      const getFakeFilePath = () => Promise.resolve([fakeFilePath]);
+      const result = await getContentFromFiles(getFakeFilePath)();
+
+      expect(result).toEqual(['### A simple test file\n']);
+    });
+
+    it('should also work when no matching file found', async () => {
+      const getFakeFilePath = () => Promise.resolve([]);
+      const result = await getContentFromFiles(getFakeFilePath)();
+
+      expect(result).toEqual([]);
+    });
+
+    it('should throw an error if file not foumd', async () => {
+      const fixtureFolderPath = getFixtureFolderPath();
+      const fakeFilePath = `${fixtureFolderPath}/fakeFiles/notExisting.md`;
+      const getFakeFilePath = () => Promise.resolve([fakeFilePath]);
+
+      const partialgetContent = getContentFromFiles(getFakeFilePath);
+
+      expect(() => partialgetContent()).rejects.toThrow();
     });
   });
 });

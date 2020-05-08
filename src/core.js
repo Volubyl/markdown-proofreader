@@ -5,7 +5,7 @@ const remark = require('remark');
 const strip = require('strip-markdown');
 const fs = require('fs');
 const fg = require('fast-glob');
-const path = require('path');
+const Grammarbot = require('grammarbot');
 
 // We are only intersted by strings beginning by '+' and not by those beginning by '++'
 const isGitInsert = (input) => /^\+[^+]/.test(input);
@@ -29,28 +29,6 @@ const stripMarkdown = (markdownText) => {
 
 const trim = (x) => x.trim();
 const removeNewLign = (x) => x.replace('\n', '');
-
-// const getNewFilePathListPipeline = () =>
-//   highland.pipeline(
-//     highland.split(),
-//     highland.map(trim),
-//     highland.filter(isNewFile),
-//     highland.map(replaceGitStatusSign),
-//     highland.map(trim)
-//   );
-
-// const getFileContent = (shortSummaryStream) => {
-//   if (!isNodeStream(shortSummaryStream))
-//     throw new Error('Invalid ShortSummary stream provided');
-
-//   const readFileWrapper = highland.wrapCallback(readFile);
-
-//   return highland(shortSummaryStream)
-//     .pipe(getNewFilePathListPipeline())
-//     .map(readFileWrapper)
-//     .parallel(3)
-//     .split();
-// };
 
 const getCleanContentPipleLine = () => {
   return highland.pipeline(
@@ -109,10 +87,74 @@ const linkContentAndFilePath = (contents, filesPaths) => {
   return filesPaths.reduce(reducer, {});
 };
 
+const extractRelevantInfosFromGrammarBotReport = (grammarBotReport) => {
+  const { matches } = grammarBotReport;
+
+  return matches.map(({ message, replacements, sentence }) => {
+    return {
+      message,
+      replacements,
+      sentence,
+    };
+  });
+};
+
+const getGrammarBotReport = async (rawContent, apikey) => {
+  const bot = new Grammarbot({
+    api_key: apikey,
+  });
+
+  return bot.checkAsync(rawContent);
+};
+
+const generateReportFromDiffs = async (apikey) => {
+  const insertedText = await getContentForNewAndModifiedFiles();
+
+  if (insertedText.length === 0) return [];
+
+  const grammarBotReport = await getGrammarBotReport(
+    insertedText.join('\n'),
+    apikey
+  );
+
+  const shortenendReport = extractRelevantInfosFromGrammarBotReport(
+    grammarBotReport
+  );
+
+  return linkContentAndFilePath(
+    [shortenendReport],
+    // currently the diffs are coming from various files.
+    // This will be displayed in the terminal :
+    ['From various source file']
+  );
+};
+
+const generateReportForMatchingFiles = async (apikey) => {
+  const filePaths = await getMarkdownFilePaths();
+  const fileContents = await getContentFromFiles(filePaths);
+
+  if (fileContents.length === 0) return [];
+
+  const plannedGrammarBotCall = fileContents.map((content) =>
+    getGrammarBotReport(content, apikey)
+  );
+
+  const grammarBotReports = await Promise.all(plannedGrammarBotCall);
+
+  const shortenedReports = grammarBotReports.map(
+    extractRelevantInfosFromGrammarBotReport
+  );
+
+  return linkContentAndFilePath(shortenedReports, filePaths);
+};
+
 module.exports = {
   getContentForNewAndModifiedFiles,
   getMarkdownFilePaths,
   isGitInsert,
+  generateReportFromDiffs,
+  generateReportForMatchingFiles,
+  extractRelevantInfosFromGrammarBotReport,
   linkContentAndFilePath,
   getCleanContentPipleLine,
   getContentFromFiles,

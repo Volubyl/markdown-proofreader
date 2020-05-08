@@ -1,41 +1,16 @@
 const chalk = require('chalk');
 const { getReport, getReports } = require('../fixtures/report');
-const getGrammarBotReport = require('../fixtures/grammarBotReport');
+
 const {
-  extractRelevantInfosFromGrammarBotReport,
   formatReplacements,
   formatMessage,
   makeOneReportDisplayable,
   makeMultipleReportDislayable,
   formatSentence,
   filterReplacement,
-} = require('../../src/report');
+} = require('../../src/ui');
 
 describe('Report', () => {
-  describe('extractRelevantInfosFromGrammarBotReport', () => {
-    it('should return a report from grammarbot report', () => {
-      const message =
-        "Statistics suggests that 'there' (as in 'Is there an answer?') might be the correct word here, not 'their' (as in 'It’s not their fault.'). Please check.";
-      const proposedReplacementValue = 'there';
-
-      const sentence = "I can't remember how to go their.";
-
-      const grammarBotReport = getGrammarBotReport(
-        message,
-        sentence,
-        proposedReplacementValue
-      );
-
-      const expectedResut = getReport({
-        message,
-        sentence,
-        replacementValue: proposedReplacementValue,
-      });
-      const result = extractRelevantInfosFromGrammarBotReport(grammarBotReport);
-      expect(result).toEqual(expectedResut);
-    });
-  });
-
   describe('Format Content', () => {
     it('should format replacement values to be displayable', () => {
       const value1 = 'there';
@@ -181,11 +156,13 @@ describe('Report', () => {
         _message,
         _replacementValue
       ) =>
-        `${String.fromCharCode(8608)} ${_filePath} :\n\n${chalk.red(
-          String.fromCharCode(10007)
-        )} ${chalk.bold(_message)}\n\n${chalk.bold(
-          String.fromCharCode(8227)
-        )} ${chalk.bold('Sentence:')} ${_sentence}\n\n${chalk.underline(
+        `${chalk.bold.magentaBright(
+          `${String.fromCharCode(8608)} File: ${_filePath}`
+        )}\n\n${chalk.red(String.fromCharCode(10007))} ${chalk.bold(
+          _message
+        )}\n\n${chalk.bold(String.fromCharCode(8227))} ${chalk.bold(
+          'Sentence:'
+        )} ${_sentence}\n\n${chalk.underline(
           'Possible replacements:'
         )} ${_replacementValue}`;
 

@@ -3,12 +3,15 @@
 const { program } = require('commander');
 
 const {
-  generateReportFromDiffs,
-  generateReportForMatchingFiles,
   displaySuccessMessage,
   displayErrorMessage,
   displayReports,
-} = require('./report');
+} = require('./ui');
+
+const {
+  generateReportFromDiffs,
+  generateReportForMatchingFiles,
+} = require('./core');
 
 const generateAndDisplayReport = async (apiKey, onlyDiffs) => {
   let report;

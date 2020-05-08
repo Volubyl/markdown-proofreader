@@ -1,11 +1,12 @@
 const chalk = require('chalk');
-const { getReport } = require('../fixtures/report');
+const { getReport, getReports } = require('../fixtures/report');
 const getGrammarBotReport = require('../fixtures/grammarBotReport');
 const {
   extractRelevantInfosFromGrammarBotReport,
   formatReplacements,
   formatMessage,
-  reduceReport,
+  makeReportDisplayable,
+  makeReporstDisplayable,
   formatSentence,
   filterReplacement,
 } = require('../../src/report');
@@ -25,11 +26,11 @@ describe('Report', () => {
         proposedReplacementValue
       );
 
-      const expectedResut = getReport(
+      const expectedResut = getReport({
         message,
         sentence,
-        proposedReplacementValue
-      );
+        replacementValue: proposedReplacementValue,
+      });
       const result = extractRelevantInfosFromGrammarBotReport(grammarBotReport);
       expect(result).toEqual(expectedResut);
     });
@@ -76,15 +77,17 @@ describe('Report', () => {
         `${chalk.bold(String.fromCharCode(8227))} Sentence: ${sentence}`
       );
     });
+  });
 
-    it('should format the report to be displayable', () => {
+  describe('Make Report yDisplayable', () => {
+    it('should format a single report to be displayable', () => {
       const message = 'A nice message with typos';
       const sentence = 'Their is a mistake here';
       const replacementValue = 'there';
-      const report = getReport(message, sentence, replacementValue)[0];
+      const report = getReport({ message, sentence, replacementValue }, 1)[0];
 
       // This is a very naive and not really maintenable way to test the UI
-      // Here snapshot seems to be useless maybe should I do something like here
+      // Here snapshot testing seems to be useless maybe should I do something like here
       // https://github.com/chalk/chalk/blob/master/test/chalk.js
 
       // Should look like this
@@ -101,17 +104,17 @@ describe('Report', () => {
         'Possible replacements:'
       )} ${replacementValue}`;
 
-      expect(reduceReport([report])).toBe(expectedResult);
+      expect(makeReportDisplayable([report])).toBe(expectedResult);
     });
 
-    it('should format the report to be displayable -- no available replacement', () => {
+    it('should format a single report to be displayable -- no available replacement', () => {
       const message = 'A nice message with typos';
       const sentence = 'Their is a mistake here';
 
-      const report = getReport(message, sentence)[0];
+      const report = getReport({ message, sentence }, 1)[0];
 
       // This is a very naive and not really maintenable way to test the UI
-      // Here snapshot seems to be useless maybe should I do something like here
+      // Here snapshot testing seems to be useless maybe should I do something like here
       // https://github.com/chalk/chalk/blob/master/test/chalk.js
 
       // Should look like this
@@ -126,7 +129,50 @@ describe('Report', () => {
         String.fromCharCode(8227)
       )} Sentence: ${sentence}`;
 
-      expect(reduceReport([report])).toBe(expectedResult);
+      expect(makeReportDisplayable([report])).toBe(expectedResult);
+    });
+
+    it('should format multiple reports to be displayable', () => {
+      const message = 'A nice message with typos';
+      const sentence = 'Their is a mistake here';
+      const replacementValue = 'there';
+      const filePath = 'foo.md';
+
+      const message1 = 'A nice message with typos';
+      const sentence1 = 'Their is a mistake here';
+      const replacementValue1 = 'there number2';
+      const filePath1 = 'bar.md';
+
+      const grammarbotReports = getReports([
+        { filePath, message, sentence, replacementValue },
+        {
+          filePath: filePath1,
+          message: message1,
+          sentence: sentence1,
+          replacementValue: replacementValue1,
+        },
+      ]);
+
+      const formattedReport = `${filePath}\n\n${chalk.red(
+        String.fromCharCode(10007)
+      )} ${chalk.bold(message)}\n${chalk.bold(
+        String.fromCharCode(8227)
+      )} Sentence: ${sentence}\n\n${chalk.underline(
+        'Possible replacements:'
+      )} ${replacementValue}`;
+
+      const formattedReport1 = `${filePath1}\n\n${chalk.red(
+        String.fromCharCode(10007)
+      )} ${chalk.bold(message1)}\n${chalk.bold(
+        String.fromCharCode(8227)
+      )} Sentence: ${sentence1}\n\n${chalk.underline(
+        'Possible replacements:'
+      )} ${replacementValue1}`;
+
+      const expectedResult = `${formattedReport}\n\n${formattedReport1}`;
+      const result = makeReporstDisplayable(grammarbotReports);
+
+      expect(result).toEqual(expectedResult);
     });
   });
 });

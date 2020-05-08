@@ -85,28 +85,36 @@ const getMarkdownFilePaths = async () => {
   return fg('**/*.md', { ignore: 'node_modules' });
 };
 
-const getContentFromFiles = (getFilePathsListFunction) => async () => {
+const getContentFromFiles = (filesPaths) => {
   const readFile = highland.wrapCallback(fs.readFile);
-  const matchingFilesPath = await getFilePathsListFunction();
-
-  return highland(matchingFilesPath)
+  return highland(filesPaths)
     .map(readFile)
     .stopOnError((err) => {
       throw new Error(err);
     })
     .series()
     .map(String)
+    .pipe(getCleanContentPipleLine())
     .collect()
     .toPromise(Promise);
 };
 
-const getContentFromMarkdownFiles = getContentFromFiles(getMarkdownFilePaths);
+const linkContentAndFilePath = (contents, filesPaths) => {
+  const reducer = (previous, current, index) => {
+    return {
+      ...previous,
+      [current]: contents[index],
+    };
+  };
+  return filesPaths.reduce(reducer, {});
+};
 
 module.exports = {
   getContentForNewAndModifiedFiles,
+  getMarkdownFilePaths,
   isGitInsert,
+  linkContentAndFilePath,
   getCleanContentPipleLine,
-  getContentFromMarkdownFiles,
   getContentFromFiles,
   getDiffContentStream,
 };

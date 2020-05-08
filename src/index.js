@@ -4,14 +4,25 @@ const { program } = require('commander');
 
 const {
   displayReport,
-  generateReport,
+  generateReportForNewAndModifiedFiles,
   displaySuccessMessage,
   displayErrorMessage,
+  generateReportForMatchingFiles,
 } = require('./report');
 
-const buildAndDisplayReport = async (apiKey) => {
+const { getContentForMatchingFiles } = require('./core');
+
+const buildAndDisplayReport = async (apiKey, glob) => {
   try {
-    const report = await generateReport(apiKey);
+    let report;
+    if (glob) {
+      report = await getContentForMatchingFiles(apiKey, glob);
+    } else {
+      report = await generateReportForNewAndModifiedFiles(apiKey);
+    }
+
+    console.log(report);
+    process.exit(0);
     if (report.length === 0) {
       displaySuccessMessage();
       process.exit(0);

@@ -5,6 +5,7 @@ const {
   isGitInsert,
   getCleanContentPipleLine,
   getContentFromFiles,
+  linkContentAndFilePath,
 } = require('../../src/core');
 
 const { getFixtureFolderPath } = require('../utils');
@@ -107,15 +108,13 @@ describe('core', () => {
     it('should remove markdown sign and new line mark', async () => {
       const fixtureFolderPath = getFixtureFolderPath();
       const fakeFilePath = `${fixtureFolderPath}/fakeFiles/simple-file.md`;
-      const getFakeFilePath = () => Promise.resolve([fakeFilePath]);
-      const result = await getContentFromFiles(getFakeFilePath)();
+      const result = await getContentFromFiles([fakeFilePath]);
 
-      expect(result).toEqual(['### A simple test file\n']);
+      expect(result).toEqual(['A simple test file']);
     });
 
     it('should also work when no matching file found', async () => {
-      const getFakeFilePath = () => Promise.resolve([]);
-      const result = await getContentFromFiles(getFakeFilePath)();
+      const result = await getContentFromFiles([]);
 
       expect(result).toEqual([]);
     });
@@ -123,11 +122,28 @@ describe('core', () => {
     it('should throw an error if file not foumd', async () => {
       const fixtureFolderPath = getFixtureFolderPath();
       const fakeFilePath = `${fixtureFolderPath}/fakeFiles/notExisting.md`;
-      const getFakeFilePath = () => Promise.resolve([fakeFilePath]);
 
-      const partialgetContent = getContentFromFiles(getFakeFilePath);
+      expect(() => getContentFromFiles([fakeFilePath])).rejects.toThrow();
+    });
+  });
 
-      expect(() => partialgetContent()).rejects.toThrow();
+  describe('linkContentAndFilePath', () => {
+    it('should return an object with content and file name linked', () => {
+      const filePath1 = 'src/foo.md';
+      const filePath2 = 'src/bar.md';
+      const filePaths = [filePath1, filePath2];
+
+      const content1 = "I'm a content";
+      const content2 = "I'm a content too";
+
+      const contents = [content1, content2];
+
+      const expectedResult = {
+        [filePath1]: content1,
+        [filePath2]: content2,
+      };
+      const result = linkContentAndFilePath(contents, filePaths);
+      expect(result).toEqual(expectedResult);
     });
   });
 });

@@ -2,7 +2,9 @@ const Grammarbot = require('grammarbot');
 const chalk = require('chalk');
 const {
   getContentForNewAndModifiedFiles,
-  getContentForMatchingFiles,
+  getMarkdownFilePaths,
+  getContentFromFiles,
+  linkContentAndFilePath,
 } = require('./core');
 
 const { log, error } = console;
@@ -36,14 +38,23 @@ const generateReportForNewAndModifiedFiles = async (apikey) => {
   return extractRelevantInfosFromGrammarBotReport(report);
 };
 
-const generateReportForMatchingFiles = async (apikey, glob = '*') => {
-  const insertedText = await getContentForMatchingFiles(glob);
+const generateReportForMatchingFiles = async (apikey) => {
+  const filePaths = await getMarkdownFilePaths();
+  const fileContents = await getContentFromFiles(filePaths);
 
-  if (insertedText.length === 0) return [];
+  if (fileContents.length === 0) return [];
 
-  const report = await getGrammarBotReport(insertedText.join('\n'), apikey);
+  const plannedGrammarBotCall = fileContents.map((content) =>
+    getGrammarBotReport(content, apikey)
+  );
 
-  return extractRelevantInfosFromGrammarBotReport(report);
+  const grammarBotReports = await Promise.all(plannedGrammarBotCall);
+
+  const shortenedReport = grammarBotReports.map(
+    extractRelevantInfosFromGrammarBotReport
+  );
+
+  return linkContentAndFilePath(shortenedReport, filePaths);
 };
 
 const filterReplacement = (replacements) =>
@@ -77,7 +88,7 @@ const formatReport = (report) => {
   )} ${formatReplacements(filtredReplacement)}`;
 };
 
-const reduceReport = (report) =>
+const makeReportDisplayable = (report) =>
   report.reduce((prev, current) => {
     if (!prev) {
       return formatReport(current);
@@ -85,12 +96,25 @@ const reduceReport = (report) =>
     return `${prev}\n\n${formatReport(current)}`;
   }, '');
 
+const makeReporstDisplayable = (reports) => {
+  const keys = Object.keys(reports);
+
+  return keys.reduce((prev, current) => {
+    if (!prev) {
+      return `${current}\n\n${makeReportDisplayable(reports[current])}`;
+    }
+    return `${prev}\n\n${current}\n\n${makeReportDisplayable(
+      reports[current]
+    )}`;
+  }, '');
+};
+
 const displayReport = (report) => {
   const workingReport = [...report];
   const title = chalk.red.bold('Oh snap we found few typos/grammar errors');
 
   log(
-    `${title}\n\nBut don't worry here is your report:\n\n${reduceReport(
+    `${title}\n\nBut don't worry here is your report:\n\n${makeReportDisplayable(
       workingReport
     )}`
   );
@@ -115,7 +139,8 @@ module.exports = {
   formatReplacements,
   formatMessage,
   formatSentence,
-  reduceReport,
+  makeReporstDisplayable,
+  makeReportDisplayable,
   filterReplacement,
   displayErrorMessage,
   displaySuccessMessage,

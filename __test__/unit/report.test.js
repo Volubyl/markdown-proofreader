@@ -5,8 +5,8 @@ const {
   extractRelevantInfosFromGrammarBotReport,
   formatReplacements,
   formatMessage,
-  makeReportDisplayable,
-  makeReporstDisplayable,
+  makeOneReportDisplayable,
+  makeMultipleReportDislayable,
   formatSentence,
   filterReplacement,
 } = require('../../src/report');
@@ -74,12 +74,14 @@ describe('Report', () => {
     it('should format sentence to be displayable', () => {
       const sentence = 'Hello COVID-19';
       expect(formatSentence(sentence)).toBe(
-        `${chalk.bold(String.fromCharCode(8227))} Sentence: ${sentence}`
+        `${chalk.bold(String.fromCharCode(8227))} ${chalk.bold(
+          'Sentence:'
+        )} ${sentence}`
       );
     });
   });
 
-  describe('Make Report yDisplayable', () => {
+  describe('Make Reports Displayable', () => {
     it('should format a single report to be displayable', () => {
       const message = 'A nice message with typos';
       const sentence = 'Their is a mistake here';
@@ -98,13 +100,13 @@ describe('Report', () => {
 
       const expectedResult = `${chalk.red(
         String.fromCharCode(10007)
-      )} ${chalk.bold(message)}\n${chalk.bold(
+      )} ${chalk.bold(message)}\n\n${chalk.bold(
         String.fromCharCode(8227)
-      )} Sentence: ${sentence}\n\n${chalk.underline(
+      )} ${chalk.bold('Sentence:')} ${sentence}\n\n${chalk.underline(
         'Possible replacements:'
       )} ${replacementValue}`;
 
-      expect(makeReportDisplayable([report])).toBe(expectedResult);
+      expect(makeOneReportDisplayable([report])).toBe(expectedResult);
     });
 
     it('should format a single report to be displayable -- no available replacement', () => {
@@ -125,11 +127,11 @@ describe('Report', () => {
 
       const expectedResult = `${chalk.red(
         String.fromCharCode(10007)
-      )} ${chalk.bold(message)}\n${chalk.bold(
+      )} ${chalk.bold(message)}\n\n${chalk.bold(
         String.fromCharCode(8227)
-      )} Sentence: ${sentence}`;
+      )} ${chalk.bold('Sentence:')} ${sentence}`;
 
-      expect(makeReportDisplayable([report])).toBe(expectedResult);
+      expect(makeOneReportDisplayable([report])).toBe(expectedResult);
     });
 
     it('should format multiple reports to be displayable', () => {
@@ -153,24 +155,47 @@ describe('Report', () => {
         },
       ]);
 
-      const formattedReport = `${filePath}\n\n${chalk.red(
-        String.fromCharCode(10007)
-      )} ${chalk.bold(message)}\n${chalk.bold(
-        String.fromCharCode(8227)
-      )} Sentence: ${sentence}\n\n${chalk.underline(
-        'Possible replacements:'
-      )} ${replacementValue}`;
+      // This is a very naive and not really maintenable way to test the UI
+      // Here snapshot testing seems to be useless maybe should I do something like here
+      // https://github.com/chalk/chalk/blob/master/test/chalk.js
 
-      const formattedReport1 = `${filePath1}\n\n${chalk.red(
-        String.fromCharCode(10007)
-      )} ${chalk.bold(message1)}\n${chalk.bold(
-        String.fromCharCode(8227)
-      )} Sentence: ${sentence1}\n\n${chalk.underline(
-        'Possible replacements:'
-      )} ${replacementValue1}`;
+      // Should look like this
+      //
+      // ↠ foo.md
+      //
+      // ✗ A nice message with typos
+      // ‣ Sentence: Their is a mistake here
+      //
+      // Possible replacements: there
+      //
+      // ↠ bar.md
+      //
+      // ✗ A nice message with typos
+      // ‣ Sentence: Their is a mistake here
+      //
+      // Possible replacements: there
 
-      const expectedResult = `${formattedReport}\n\n${formattedReport1}`;
-      const result = makeReporstDisplayable(grammarbotReports);
+      const formatReport = (
+        _filePath,
+        _sentence,
+        _message,
+        _replacementValue
+      ) =>
+        `${String.fromCharCode(8608)} ${_filePath} :\n\n${chalk.red(
+          String.fromCharCode(10007)
+        )} ${chalk.bold(_message)}\n\n${chalk.bold(
+          String.fromCharCode(8227)
+        )} ${chalk.bold('Sentence:')} ${_sentence}\n\n${chalk.underline(
+          'Possible replacements:'
+        )} ${_replacementValue}`;
+
+      const expectedResult = `${formatReport(
+        filePath,
+        sentence,
+        message,
+        replacementValue
+      )}\n\n${formatReport(filePath1, sentence1, message1, replacementValue1)}`;
+      const result = makeMultipleReportDislayable(grammarbotReports);
 
       expect(result).toEqual(expectedResult);
     });

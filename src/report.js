@@ -33,9 +33,21 @@ const generateReportFromDiffs = async (apikey) => {
 
   if (insertedText.length === 0) return [];
 
-  const report = await getGrammarBotReport(insertedText.join('\n'), apikey);
+  const grammarBotReport = await getGrammarBotReport(
+    insertedText.join('\n'),
+    apikey
+  );
 
-  return extractRelevantInfosFromGrammarBotReport(report);
+  const shortenendReport = extractRelevantInfosFromGrammarBotReport(
+    grammarBotReport
+  );
+
+  return linkContentAndFilePath(
+    [shortenendReport],
+    // currently the diffs are coming from various files.
+    // This will be displayed in the terminal :
+    ['From various source file']
+  );
 };
 
 const generateReportForMatchingFiles = async (apikey) => {
@@ -50,11 +62,11 @@ const generateReportForMatchingFiles = async (apikey) => {
 
   const grammarBotReports = await Promise.all(plannedGrammarBotCall);
 
-  const shortenedReport = grammarBotReports.map(
+  const shortenedReports = grammarBotReports.map(
     extractRelevantInfosFromGrammarBotReport
   );
 
-  return linkContentAndFilePath(shortenedReport, filePaths);
+  return linkContentAndFilePath(shortenedReports, filePaths);
 };
 
 const filterReplacement = (replacements) =>
@@ -72,10 +84,15 @@ const formatMessage = (message) =>
   `${chalk.red(String.fromCharCode(10007))} ${chalk.bold(message)}`;
 
 const formatSentence = (sentence) =>
-  `${chalk.bold(String.fromCharCode(8227))} Sentence: ${sentence}`;
+  `${chalk.bold(String.fromCharCode(8227))} ${chalk.bold(
+    'Sentence:'
+  )} ${sentence}`;
+
+const formatFilePath = (filepath) =>
+  `${String.fromCharCode(8608)} ${filepath} :`;
 
 const formatReport = (report) => {
-  const baseReport = `${formatMessage(report.message)}\n${formatSentence(
+  const baseReport = `${formatMessage(report.message)}\n\n${formatSentence(
     report.sentence
   )}`;
 
@@ -88,7 +105,7 @@ const formatReport = (report) => {
   )} ${formatReplacements(filtredReplacement)}`;
 };
 
-const makeReportDisplayable = (report) =>
+const makeOneReportDisplayable = (report) =>
   report.reduce((prev, current) => {
     if (!prev) {
       return formatReport(current);
@@ -96,29 +113,20 @@ const makeReportDisplayable = (report) =>
     return `${prev}\n\n${formatReport(current)}`;
   }, '');
 
-const makeReporstDisplayable = (reports) => {
+const makeMultipleReportDislayable = (reports) => {
   const keys = Object.keys(reports);
 
   return keys.reduce((prev, filePath) => {
+    const formattedFilePath = formatFilePath(filePath);
     if (!prev) {
-      return `${filePath}\n\n${makeReportDisplayable(reports[filePath])}`;
+      return `${formattedFilePath}\n\n${makeOneReportDisplayable(
+        reports[filePath]
+      )}`;
     }
-    return `${prev}\n\n${filePath}\n\n${makeReportDisplayable(
+    return `${prev}\n\n${formattedFilePath}\n\n${makeOneReportDisplayable(
       reports[filePath]
     )}`;
   }, '');
-};
-
-// Should really refactor this ...
-const displayReport = (report) => {
-  const workingReport = [...report];
-  const title = chalk.red.bold('Oh snap we found few typos/grammar errors');
-
-  log(
-    `${title}\n\nBut don't worry here is your report:\n\n${makeReportDisplayable(
-      workingReport
-    )}`
-  );
 };
 
 const displayReports = (reports) => {
@@ -126,7 +134,7 @@ const displayReports = (reports) => {
   const title = chalk.red.bold('Oh snap we found few typos/grammar errors');
 
   log(
-    `${title}\n\nBut don't worry here is your report:\n\n${makeReporstDisplayable(
+    `${title}\n\nBut don't worry here is your report:\n\n${makeMultipleReportDislayable(
       workingReports
     )}`
   );
@@ -147,13 +155,12 @@ module.exports = {
   extractRelevantInfosFromGrammarBotReport,
   generateReportFromDiffs,
   generateReportForMatchingFiles,
-  displayReport,
   formatReplacements,
   displayReports,
   formatMessage,
   formatSentence,
-  makeReporstDisplayable,
-  makeReportDisplayable,
+  makeMultipleReportDislayable,
+  makeOneReportDisplayable,
   filterReplacement,
   displayErrorMessage,
   displaySuccessMessage,

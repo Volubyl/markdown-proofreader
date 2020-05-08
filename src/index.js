@@ -3,7 +3,6 @@
 const { program } = require('commander');
 
 const {
-  displayReport,
   generateReportFromDiffs,
   generateReportForMatchingFiles,
   displaySuccessMessage,
@@ -11,26 +10,19 @@ const {
   displayReports,
 } = require('./report');
 
-const buildAndDisplayReport = async (apiKey, onlyDiffs) => {
+const generateAndDisplayReport = async (apiKey, onlyDiffs) => {
+  let report;
   try {
     if (onlyDiffs) {
-      const report = generateReportFromDiffs(apiKey);
-
-      if (report.length === 0) {
-        displaySuccessMessage();
-        process.exit(0);
-      }
-
-      displayReport(report);
-      process.exit(0);
+      report = await generateReportFromDiffs(apiKey);
+    } else {
+      report = await generateReportForMatchingFiles(apiKey);
     }
-
-    const reports = await generateReportForMatchingFiles(apiKey);
-    if (reports.length === 0) {
+    if (report.length === 0) {
       displaySuccessMessage();
       process.exit(0);
     }
-    displayReports(reports);
+    displayReports(report);
     process.exit(0);
   } catch (e) {
     displayErrorMessage(e);
@@ -52,4 +44,4 @@ program.parse(process.argv);
 
 const { key: apiKey, onlyDiffs } = program;
 
-buildAndDisplayReport(apiKey, onlyDiffs);
+generateAndDisplayReport(apiKey, onlyDiffs);

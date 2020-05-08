@@ -28,7 +28,7 @@ const getGrammarBotReport = async (rawContent, apikey) => {
   return bot.checkAsync(rawContent);
 };
 
-const generateReportForNewAndModifiedFiles = async (apikey) => {
+const generateReportFromDiffs = async (apikey) => {
   const insertedText = await getContentForNewAndModifiedFiles();
 
   if (insertedText.length === 0) return [];
@@ -99,16 +99,17 @@ const makeReportDisplayable = (report) =>
 const makeReporstDisplayable = (reports) => {
   const keys = Object.keys(reports);
 
-  return keys.reduce((prev, current) => {
+  return keys.reduce((prev, filePath) => {
     if (!prev) {
-      return `${current}\n\n${makeReportDisplayable(reports[current])}`;
+      return `${filePath}\n\n${makeReportDisplayable(reports[filePath])}`;
     }
-    return `${prev}\n\n${current}\n\n${makeReportDisplayable(
-      reports[current]
+    return `${prev}\n\n${filePath}\n\n${makeReportDisplayable(
+      reports[filePath]
     )}`;
   }, '');
 };
 
+// Should really refactor this ...
 const displayReport = (report) => {
   const workingReport = [...report];
   const title = chalk.red.bold('Oh snap we found few typos/grammar errors');
@@ -116,6 +117,17 @@ const displayReport = (report) => {
   log(
     `${title}\n\nBut don't worry here is your report:\n\n${makeReportDisplayable(
       workingReport
+    )}`
+  );
+};
+
+const displayReports = (reports) => {
+  const workingReports = { ...reports };
+  const title = chalk.red.bold('Oh snap we found few typos/grammar errors');
+
+  log(
+    `${title}\n\nBut don't worry here is your report:\n\n${makeReporstDisplayable(
+      workingReports
     )}`
   );
 };
@@ -133,10 +145,11 @@ const displayErrorMessage = (e) => {
 
 module.exports = {
   extractRelevantInfosFromGrammarBotReport,
-  generateReportForNewAndModifiedFiles,
+  generateReportFromDiffs,
   generateReportForMatchingFiles,
   displayReport,
   formatReplacements,
+  displayReports,
   formatMessage,
   formatSentence,
   makeReporstDisplayable,

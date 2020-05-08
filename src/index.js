@@ -4,30 +4,33 @@ const { program } = require('commander');
 
 const {
   displayReport,
-  generateReportForNewAndModifiedFiles,
+  generateReportFromDiffs,
+  generateReportForMatchingFiles,
   displaySuccessMessage,
   displayErrorMessage,
-  generateReportForMatchingFiles,
+  displayReports,
 } = require('./report');
 
-const { getContentForMatchingFiles } = require('./core');
-
-const buildAndDisplayReport = async (apiKey, glob) => {
+const buildAndDisplayReport = async (apiKey, onlyDiffs) => {
   try {
-    let report;
-    if (glob) {
-      report = await getContentForMatchingFiles(apiKey, glob);
-    } else {
-      report = await generateReportForNewAndModifiedFiles(apiKey);
+    if (onlyDiffs) {
+      const report = generateReportFromDiffs(apiKey);
+
+      if (report.length === 0) {
+        displaySuccessMessage();
+        process.exit(0);
+      }
+
+      displayReport(report);
+      process.exit(0);
     }
 
-    console.log(report);
-    process.exit(0);
-    if (report.length === 0) {
+    const reports = await generateReportForMatchingFiles(apiKey);
+    if (reports.length === 0) {
       displaySuccessMessage();
       process.exit(0);
     }
-    displayReport(report);
+    displayReports(reports);
     process.exit(0);
   } catch (e) {
     displayErrorMessage(e);
@@ -37,11 +40,16 @@ const buildAndDisplayReport = async (apiKey, glob) => {
 
 program
   .name('markdownproofreader')
-  .version('0.O.O')
-  .requiredOption('-key, --API_KEY <key>', 'a valid grammar bot key');
+  .version('0.O.1')
+  .requiredOption('-key, --API_KEY <key>', 'a valid grammar bot key')
+  .option(
+    '--only-diffs',
+    'will only check the diff from the previous commit. Default to false',
+    false
+  );
 
 program.parse(process.argv);
 
-const apiKey = program.key;
+const { key: apiKey, onlyDiffs } = program;
 
-buildAndDisplayReport(apiKey);
+buildAndDisplayReport(apiKey, onlyDiffs);

@@ -210,7 +210,7 @@ describe('core', () => {
       const glob = 'src/**/*.js';
       const result = sanatizeGlob(glob);
 
-      expect(result).toBe('src/**/*.js.{md}');
+      expect(result).toBe('src/**/*.js.md');
     });
 
     it('should append .md to a glob without specified extension', () => {

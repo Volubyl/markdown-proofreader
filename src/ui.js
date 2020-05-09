@@ -86,6 +86,8 @@ const displayErrorMessage = (e) => {
   error(e);
 };
 
+const displayInfoMessage = (message) => log(chalk.bold(`\n${message}\n`));
+
 module.exports = {
   formatReplacements,
   displayReports,
@@ -95,5 +97,6 @@ module.exports = {
   makeOneReportDisplayable,
   filterReplacement,
   displayErrorMessage,
+  displayInfoMessage,
   displaySuccessMessage,
 };

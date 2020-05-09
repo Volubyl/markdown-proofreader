@@ -59,8 +59,24 @@ const getContentForNewAndModifiedFiles = () => {
     .toPromise(Promise);
 };
 
-const getMarkdownFilePaths = async () => {
-  return fg('**/*.md', { ignore: 'node_modules' });
+const isMarkdownGlob = (glob) => {
+  return ['{md}', 'md'].includes(glob.split('.').pop());
+};
+
+// it's just a little layer of security to avoid reading non-markdown files.
+// Real security is done by cleaning up the markdown afterwards
+const sanatizeGlob = (glob) => {
+  if (isMarkdownGlob(glob)) {
+    return glob;
+  }
+
+  return `${glob}.md`;
+};
+
+const getMarkdownFilePaths = async (glob) => {
+  return fg(sanatizeGlob(glob), {
+    ignore: 'node_modules',
+  });
 };
 
 const getContentFromFiles = (filesPaths) => {
@@ -129,8 +145,9 @@ const generateReportFromDiffs = async (apikey) => {
   );
 };
 
-const generateReportForMatchingFiles = async (apikey) => {
-  const filePaths = await getMarkdownFilePaths();
+const generateReportForMatchingFiles = async (apikey, glob) => {
+  const filePaths = await getMarkdownFilePaths(glob);
+
   const fileContents = await getContentFromFiles(filePaths);
 
   if (fileContents.length === 0) return [];
@@ -152,6 +169,8 @@ module.exports = {
   getContentForNewAndModifiedFiles,
   getMarkdownFilePaths,
   isGitInsert,
+  isMarkdownGlob,
+  sanatizeGlob,
   generateReportFromDiffs,
   generateReportForMatchingFiles,
   extractRelevantInfosFromGrammarBotReport,

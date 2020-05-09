@@ -7,6 +7,8 @@ const {
   getContentFromFiles,
   linkContentAndFilePath,
   extractRelevantInfosFromGrammarBotReport,
+  isMarkdownGlob,
+  sanatizeGlob,
 } = require('../../src/core');
 
 const { getFixtureFolderPath } = require('../utils');
@@ -170,6 +172,66 @@ describe('core', () => {
       };
       const result = linkContentAndFilePath(contents, filePaths);
       expect(result).toEqual(expectedResult);
+    });
+  });
+
+  describe('isMarkdownGlob', () => {
+    it('should return false if the glob has a non md file extension', () => {
+      const glob = 'src/**/*.js';
+      const result = isMarkdownGlob(glob);
+
+      expect(result).toBeFalsy();
+    });
+
+    it('should return false if the glob has no file extension', () => {
+      const glob = 'src/**/*';
+      const result = isMarkdownGlob(glob);
+
+      expect(result).toBeFalsy();
+    });
+
+    it('should return true if the glob has md extension', () => {
+      const glob = 'src/**/*.md';
+      const result = isMarkdownGlob(glob);
+
+      expect(result).toBeTruthy();
+    });
+
+    it('should return true if the glob has {md} extension', () => {
+      const glob = 'src/**/*.{md}';
+      const result = isMarkdownGlob(glob);
+
+      expect(result).toBeTruthy();
+    });
+  });
+
+  describe('sanatizeGlob', () => {
+    it('should append {.md} to a non md glob', () => {
+      const glob = 'src/**/*.js';
+      const result = sanatizeGlob(glob);
+
+      expect(result).toBe('src/**/*.js.{md}');
+    });
+
+    it('should append .md to a glob without specified extension', () => {
+      const glob = 'src/**/*';
+      const result = sanatizeGlob(glob);
+
+      expect(result).toBe('src/**/*.md');
+    });
+
+    it('should do nothing if markdown glob provided', () => {
+      const glob = 'src/**/*.md';
+      const result = sanatizeGlob(glob);
+
+      expect(result).toBe(glob);
+    });
+
+    it('should do nothing if markdown glob provided', () => {
+      const glob = 'src/**/*.{md}';
+      const result = sanatizeGlob(glob);
+
+      expect(result).toBe(glob);
     });
   });
 });

@@ -6,20 +6,24 @@ const {
   displaySuccessMessage,
   displayErrorMessage,
   displayReports,
+  displayInfoMessage,
 } = require('./ui');
 
 const {
   generateReportFromDiffs,
   generateReportForMatchingFiles,
+  sanatizeGlob,
 } = require('./core');
 
-const generateAndDisplayReport = async (apiKey, onlyDiffs) => {
+const generateAndDisplayReport = async (apiKey, onlyDiffs, match) => {
   let report;
   try {
     if (onlyDiffs) {
       report = await generateReportFromDiffs(apiKey);
     } else {
-      report = await generateReportForMatchingFiles(apiKey);
+      const sanatizedGlob = sanatizeGlob(match);
+      displayInfoMessage(`checking file(s) matching: ${sanatizedGlob}`);
+      report = await generateReportForMatchingFiles(apiKey, sanatizedGlob);
     }
     if (report.length === 0) {
       displaySuccessMessage();
@@ -41,10 +45,15 @@ program
     '--only-diffs',
     'will only check the diff from the previous commit. Default to false',
     false
+  )
+  .option(
+    '--match <glob>',
+    'only check files that match the glob. Default value : *.md',
+    '*.md'
   );
 
 program.parse(process.argv);
 
-const { key: apiKey, onlyDiffs } = program;
+const { key: apiKey, onlyDiffs, match } = program;
 
-generateAndDisplayReport(apiKey, onlyDiffs);
+generateAndDisplayReport(apiKey, onlyDiffs, match);

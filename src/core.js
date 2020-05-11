@@ -163,22 +163,22 @@ const generateReportFromDiffs = async (apikey) => {
 // - Would be also nice to make dependencies with side effects more predicatble
 
 const partialGenerateReportForMatchingFiles = (
-  sendContentToGrammarBot,
-  fileContentReader
+  sendContentToProofreadingAPI,
+  getFileContentMatchingGlob
 ) => async (apikey, glob) => {
   if (typeof sendContentToGrammarBot !== 'function') {
-    throw new Error('"sendContentToGrammarBot" is not a valid function');
+    throw new Error('"sendContentToProofreadingAPI" is not a valid function');
   }
   if (typeof fileContentReader !== 'function') {
-    throw new Error('"fileContentReader" is not a valid function');
+    throw new Error('"getFileContentMatchingGlob" is not a valid function');
   }
 
-  const [filePaths, fileContents] = await fileContentReader(glob);
+  const [filePaths, fileContents] = await getFileContentMatchingGlob(glob);
 
   if (fileContents.length === 0) return linkReporttAndFilePath([], filePaths);
 
   const plannedGrammarBotCall = fileContents.map((content) =>
-    sendContentToGrammarBot(content, apikey)
+    sendContentToProofreadingAPI(content, apikey)
   );
 
   const grammarBotReports = await Promise.all(plannedGrammarBotCall);

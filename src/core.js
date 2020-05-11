@@ -93,11 +93,19 @@ const getContentFromFiles = (filesPaths) => {
     .toPromise(Promise);
 };
 
-const linkContentAndFilePath = (contents, filesPaths) => {
+const getContentFromMarkdownFiles = async (glob) => {
+  const filesPaths = await getMarkdownFilePaths(glob);
+  const contents = await getContentFromFiles(getContentFromFiles);
+  return [filesPaths, contents];
+};
+
+const linkReporttAndFilePath = (contents, filesPaths) => {
   const reducer = (previous, current, index) => {
     return {
       ...previous,
-      [current]: contents[index],
+      // I rather like to have null instead of undefined.
+      // Null is more like "there is no value on purpose'
+      [current]: contents[index] || null,
     };
   };
   return filesPaths.reduce(reducer, {});
@@ -137,7 +145,7 @@ const generateReportFromDiffs = async (apikey) => {
     grammarBotReport
   );
 
-  return linkContentAndFilePath(
+  return linkReporttAndFilePath(
     [shortenendReport],
     // currently the diffs are coming from various files.
     // This will be displayed in the terminal :
@@ -154,17 +162,16 @@ const partialGenerateReportForMatchingFiles = (
   sendContentToGrammarBot,
   fileContentReader
 ) => async (apikey, glob) => {
-  if (typeof tysendContentToGrammarBot !== 'function') {
+  if (typeof sendContentToGrammarBot !== 'function') {
     throw new Error('"sendContentToGrammarBot" is not a valid function');
   }
   if (typeof fileContentReader !== 'function') {
     throw new Error('"fileContentReader" is not a valid function');
   }
-  const filePaths = await getMarkdownFilePaths(glob);
 
-  const fileContents = await fileContentReader(filePaths);
+  const [filePaths, fileContents] = await fileContentReader(glob);
 
-  if (fileContents.length === 0) return [];
+  if (fileContents.length === 0) return linkReporttAndFilePath([], filePaths);
 
   const plannedGrammarBotCall = fileContents.map((content) =>
     sendContentToGrammarBot(content, apikey)
@@ -176,7 +183,7 @@ const partialGenerateReportForMatchingFiles = (
     extractRelevantInfosFromGrammarBotReport
   );
 
-  return linkContentAndFilePath(shortenedReports, filePaths);
+  return linkReporttAndFilePath(shortenedReports, filePaths);
 };
 
 module.exports = {
@@ -186,11 +193,13 @@ module.exports = {
   isMarkdownGlob,
   sanatizeGlob,
   generateReportFromDiffs,
+  partialGenerateReportForMatchingFiles,
   generateReportForMatchingFiles: partialGenerateReportForMatchingFiles(
-    getGrammarBotReport
+    getGrammarBotReport,
+    getContentFromMarkdownFiles
   ),
   extractRelevantInfosFromGrammarBotReport,
-  linkContentAndFilePath,
+  linkReporttAndFilePath,
   getCleanContentPipleLine,
   getContentFromFiles,
   getDiffContentStream,

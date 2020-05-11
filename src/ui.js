@@ -53,10 +53,9 @@ const makeMultipleReportDislayable = (reports) => {
   const keys = Object.keys(reports);
 
   return keys.reduce((prev, filePath) => {
-    const displayableReport = makeOneReportDisplayable(reports[filePath]);
+    const workingReport = makeOneReportDisplayable(reports[filePath]);
     const finalReport =
-      displayableReport ||
-      formatSuccessMessage('No mistake found in this file');
+      workingReport || formatSuccessMessage('No mistake found in this file');
 
     const formattedFilePath = formatFilePath(filePath);
 

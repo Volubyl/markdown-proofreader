@@ -166,10 +166,10 @@ const partialGenerateReportForMatchingFiles = (
   sendContentToProofreadingAPI,
   getFileContentMatchingGlob
 ) => async (apikey, glob) => {
-  if (typeof sendContentToGrammarBot !== 'function') {
+  if (typeof sendContentToProofreadingAPI !== 'function') {
     throw new Error('"sendContentToProofreadingAPI" is not a valid function');
   }
-  if (typeof fileContentReader !== 'function') {
+  if (typeof getFileContentMatchingGlob !== 'function') {
     throw new Error('"getFileContentMatchingGlob" is not a valid function');
   }
 

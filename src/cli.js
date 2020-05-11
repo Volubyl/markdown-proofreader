@@ -25,10 +25,6 @@ const generateAndDisplayReport = async (apiKey, onlyDiffs, match) => {
       displayInfoMessage(`checking file(s) matching: ${sanatizedGlob}`);
       report = await generateReportForMatchingFiles(apiKey, sanatizedGlob);
     }
-    if (report.length === 0) {
-      displaySuccessMessage();
-      process.exit(0);
-    }
     displayReports(report);
     process.exit(0);
   } catch (e) {

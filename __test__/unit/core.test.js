@@ -185,19 +185,19 @@ describe('core', () => {
     });
 
     it('should return an object with file name but no content if no content provided', () => {
+      const report = getReport({
+        message: 'fakeMessage1',
+        sentence: 'fakeSentece1',
+        replacementValue: 'fakereplacementValue1',
+      });
       const filePath1 = 'src/foo.md';
       const filePath2 = 'src/bar.md';
-      const filePaths = [filePath1, filePath2];
-
-      const content1 = "I'm a content";
-
-      const contents = [content1];
 
       const expectedResult = {
-        [filePath1]: content1,
-        [filePath2]: null,
+        [filePath1]: report,
+        [filePath2]: [],
       };
-      const result = linkReporttAndFilePath(contents, filePaths);
+      const result = linkReporttAndFilePath([report], [filePath1, filePath2]);
       expect(result).toEqual(expectedResult);
     });
   });
@@ -353,7 +353,7 @@ describe('core', () => {
       )(fakeAPIKey, fakeGlob);
 
       expect(report).toEqual({
-        [fakeFileName]: null,
+        [fakeFileName]: [],
       });
     });
   });

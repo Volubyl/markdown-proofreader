@@ -95,7 +95,7 @@ const getContentFromFiles = (filesPaths) => {
 
 const getContentFromMarkdownFiles = async (glob) => {
   const filesPaths = await getMarkdownFilePaths(glob);
-  const contents = await getContentFromFiles(getContentFromFiles);
+  const contents = await getContentFromFiles(filesPaths);
   return [filesPaths, contents];
 };
 
@@ -103,9 +103,7 @@ const linkReporttAndFilePath = (contents, filesPaths) => {
   const reducer = (previous, current, index) => {
     return {
       ...previous,
-      // I rather like to have null instead of undefined.
-      // Null is more like "there is no value on purpose'
-      [current]: contents[index] || null,
+      [current]: contents[index] || [],
     };
   };
   return filesPaths.reduce(reducer, {});
@@ -134,7 +132,13 @@ const getGrammarBotReport = async (rawContent, apikey) => {
 const generateReportFromDiffs = async (apikey) => {
   const insertedText = await getContentForNewAndModifiedFiles();
 
-  if (insertedText.length === 0) return [];
+  if (insertedText.length === 0)
+    return linkReporttAndFilePath(
+      [],
+      // currently the diffs are coming from various files.
+      // This will be displayed in the terminal :
+      ['From various source file']
+    );
 
   const grammarBotReport = await getGrammarBotReport(
     insertedText.join('\n'),

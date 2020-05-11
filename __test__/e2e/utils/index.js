@@ -2,53 +2,45 @@ const fsExtra = require('fs-extra');
 const fs = require('fs');
 const { exec, execSync } = require('child_process');
 
-const e2eTestFolder = './src/e2e_files';
-const filePath = `${e2eTestFolder}/test-file.md`;
-const testBranchName = 'e2e-test-branch';
-
-// Outch that's a real nasty side effect here :-(
-let currentBranchName;
-const getCurrentBranchName = () => {
-  currentBranchName = execSync(`git rev-parse --abbrev-ref HEAD`);
-  return currentBranchName.toString();
-};
-
-const checkoutToTestBranch = () => {
-  exec(`git checkout -b ${testBranchName}`);
-};
-
-const removeTestBranch = () => {
-  exec(`git checkout ${currentBranchName}`);
-  exec(`git branch -D  ${testBranchName}`);
-};
-
 const commitTestFile = (message) => {
   exec(`git commit -m "${message}"`);
 };
 
-const appendTextToTestFile = (content) => {
+const appendTextToTestFile = (filePath, content) => {
   fs.appendFileSync(filePath, content);
 };
 
-const createTestFile = (content) => {
+const createTestFile = (filePath, content) => {
   fsExtra.createFileSync(filePath);
-  appendTextToTestFile(content);
+  appendTextToTestFile(filePath, content);
 };
 
-const removeTestFiles = () => {
+const removeTestFiles = (filePath) => {
   fs.unlinkSync(filePath);
 };
 
-const trackTestFile = () => {
+const trackTestFile = (filePath) => {
   exec(`git add ${filePath}`);
 };
 
-const untrackTestFile = () => {
+const untrackTestFile = (filePath) => {
   exec(`git restore --staged ${filePath}`);
 };
 
-const removeFixtureFolder = () => {
+const removeFixtureFolder = (e2eTestFolder) => {
   fsExtra.removeSync(e2eTestFolder);
+};
+
+const undoLastCommit = () => {
+  exec('git reset --hard HEAD~1');
+};
+
+const preventTestIfSomethingOnGoing = () => {
+  const diffs = execSync(`git diff`).toString();
+
+  if (diffs.length > 0) {
+    throw new Error('Please commit your changes before launching e2e tests');
+  }
 };
 
 module.exports = {
@@ -57,9 +49,8 @@ module.exports = {
   removeTestFiles,
   removeFixtureFolder,
   trackTestFile,
-  checkoutToTestBranch,
+  preventTestIfSomethingOnGoing,
+  undoLastCommit,
   commitTestFile,
-  removeTestBranch,
-  getCurrentBranchName,
   untrackTestFile,
 };

@@ -145,15 +145,29 @@ const generateReportFromDiffs = async (apikey) => {
   );
 };
 
-const generateReportForMatchingFiles = async (apikey, glob) => {
+// this function only exists to allow dependency injection mostly for testing purpose
+// it's a nice alternative to mocking because
+// - Would be cool to avoid XHR call while testing
+// - Would be also nice to make dependencies with side effects more predicatble
+
+const partialGenerateReportForMatchingFiles = (
+  sendContentToGrammarBot,
+  fileContentReader
+) => async (apikey, glob) => {
+  if (typeof tysendContentToGrammarBot !== 'function') {
+    throw new Error('"sendContentToGrammarBot" is not a valid function');
+  }
+  if (typeof fileContentReader !== 'function') {
+    throw new Error('"fileContentReader" is not a valid function');
+  }
   const filePaths = await getMarkdownFilePaths(glob);
 
-  const fileContents = await getContentFromFiles(filePaths);
+  const fileContents = await fileContentReader(filePaths);
 
   if (fileContents.length === 0) return [];
 
   const plannedGrammarBotCall = fileContents.map((content) =>
-    getGrammarBotReport(content, apikey)
+    sendContentToGrammarBot(content, apikey)
   );
 
   const grammarBotReports = await Promise.all(plannedGrammarBotCall);
@@ -172,7 +186,9 @@ module.exports = {
   isMarkdownGlob,
   sanatizeGlob,
   generateReportFromDiffs,
-  generateReportForMatchingFiles,
+  generateReportForMatchingFiles: partialGenerateReportForMatchingFiles(
+    getGrammarBotReport
+  ),
   extractRelevantInfosFromGrammarBotReport,
   linkContentAndFilePath,
   getCleanContentPipleLine,

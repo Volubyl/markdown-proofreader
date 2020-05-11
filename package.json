@@ -7,7 +7,7 @@
     "markdown-proofreader": "./src/cli.js"
   },
   "scripts": {
-    "test": "jest --collectCoverage",
+    "test": "npm run test:unit -- --collectCoverage",
     "test:unit": "jest __test__/unit/**",
     "test:e2e": "jest __test__/e2e/**",
     "start:dev": "node src/cli.js",

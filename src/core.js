@@ -198,7 +198,7 @@ module.exports = {
   sanatizeGlob,
   generateReportFromDiffs,
   partialGenerateReportForMatchingFiles,
-  generateReportForMatchingFiles: partialGenerateReportForMatchingFiles(
+  generateReportForMatchingMarkdownFiles: partialGenerateReportForMatchingFiles(
     getGrammarBotReport,
     getContentFromMarkdownFiles
   ),

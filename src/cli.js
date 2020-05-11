@@ -11,7 +11,7 @@ const {
 
 const {
   generateReportFromDiffs,
-  generateReportForMatchingFiles,
+  generateReportForMatchingMarkdownFiles,
   sanatizeGlob,
 } = require('./core');
 
@@ -23,7 +23,11 @@ const generateAndDisplayReport = async (apiKey, onlyDiffs, match) => {
     } else {
       const sanatizedGlob = sanatizeGlob(match);
       displayInfoMessage(`checking file(s) matching: ${sanatizedGlob}`);
-      report = await generateReportForMatchingFiles(apiKey, sanatizedGlob);
+
+      report = await generateReportForMatchingMarkdownFiles(
+        apiKey,
+        sanatizedGlob
+      );
     }
     displayReports(report);
     process.exit(0);

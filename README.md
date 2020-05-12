@@ -56,7 +56,7 @@ See [`fast-glob` documentation](https://github.com/mrmlnc/fast-glob) to learn mo
 
 (only the updates will be considered, not the deletion)
 
-####g How does it work ?
+#### How does it work ?
 
 `markdown-proofreader` will perfom a `git diff --cached` on your markdown files, strip the markdown and send the content to GrammarBot API.
 

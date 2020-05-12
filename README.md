@@ -25,10 +25,10 @@ Run `npm install markdown-proofreader`.
 
 `Markdown Proofreader` has currently two modes 
 
-- Verification of files corresponding to a glob
-- Verification of additions compared to the last commit
+- Verification of files matching a glob
+- Verification of additions compared to the last commit (diff mode)
 
-### Files corresponding to a glob (Default mode)
+### Files matching a glob (Default mode)
 
 By default, Markdown proofreader will check all markdown files present in the repository.
 
@@ -38,7 +38,7 @@ Under the hood we are using `Fast Glob` to find pathnames that matched a provide
 
 See [`fast-glob` documentation](https://github.com/mrmlnc/fast-glob) to learn more about the syntax.
 
-### Check only addition mode
+### Diff mode
 
 #### Working with new files
 
@@ -56,7 +56,7 @@ See [`fast-glob` documentation](https://github.com/mrmlnc/fast-glob) to learn mo
 
 (only the updates will be considered, not the deletion)
 
-## How does it work ?
+####g How does it work ?
 
 `markdown-proofreader` will perfom a `git diff --cached` on your markdown files, strip the markdown and send the content to GrammarBot API.
 
@@ -71,7 +71,7 @@ See [`fast-glob` documentation](https://github.com/mrmlnc/fast-glob) to learn mo
 
 ### Do you work for GrammarBot ?
 
-Nope. I'm not working for GrammarBot or get any money/goodies/support from them. I just made few research on DuckDuckGo and found that API. I will try to integrate other APIs in a future release.
+Nope. I'm not working for GrammarBot or get any money/goodies/support from them. I just did some research on DuckDuckGo and found that API. I will try to integrate other APIs in a future release.
 
 ### You don't like human proofreader ?
 Yes I really do. But unfortunately, I'm still too broke to hire a reviewer for every text I write. But yes, please hire **REAL HUMANS**.

@@ -55,7 +55,7 @@ const makeMultipleReportDislayable = (reports) => {
   return keys.reduce((prev, filePath) => {
     const workingReport = makeOneReportDisplayable(reports[filePath]);
     const finalReport =
-      workingReport || formatSuccessMessage('No mistake found in this file');
+      workingReport || formatSuccessMessage('No mistake found here');
 
     const formattedFilePath = formatFilePath(filePath);
 
@@ -68,12 +68,11 @@ const makeMultipleReportDislayable = (reports) => {
 
 const displayReports = (reports) => {
   const workingReports = { ...reports };
-  const title = chalk.red.bold('Oh snap we found few typos/grammar errors');
+
+  const title = "We've checked your files. Here is what we found :";
 
   log(
-    `${title}\n\nBut don't worry here is your report:\n\n${makeMultipleReportDislayable(
-      workingReports
-    )}`
+    `${chalk.bold(title)}\n\n${makeMultipleReportDislayable(workingReports)}`
   );
 };
 

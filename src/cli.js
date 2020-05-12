@@ -14,19 +14,16 @@ const {
   sanatizeGlob,
 } = require('./core');
 
-const generateAndDisplayReport = async (apiKey, onlyDiffs, match) => {
+const generateAndDisplayReport = async (onlyDiffs, match) => {
   let report;
   try {
     if (onlyDiffs) {
-      report = await generateReportFromDiffs(apiKey);
+      report = await generateReportFromDiffs();
     } else {
       const sanatizedGlob = sanatizeGlob(match);
       displayInfoMessage(`checking file(s) matching: ${sanatizedGlob}`);
 
-      report = await generateReportForMatchingMarkdownFiles(
-        apiKey,
-        sanatizedGlob
-      );
+      report = await generateReportForMatchingMarkdownFiles(sanatizedGlob);
     }
     displayReports(report);
     process.exit(0);
@@ -39,7 +36,6 @@ const generateAndDisplayReport = async (apiKey, onlyDiffs, match) => {
 program
   .name('markdownproofreader')
   .version('0.O.1')
-  .requiredOption('-key, --API_KEY <key>', 'a valid grammar bot key')
   .option(
     '--only-diffs',
     'will only check the diff from the previous commit. Default to false',
@@ -53,6 +49,6 @@ program
 
 program.parse(process.argv);
 
-const { key: apiKey, onlyDiffs, match } = program;
+const { onlyDiffs, match } = program;
 
-generateAndDisplayReport(apiKey, onlyDiffs, match);
+generateAndDisplayReport(onlyDiffs, match);

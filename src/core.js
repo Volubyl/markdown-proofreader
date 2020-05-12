@@ -121,15 +121,13 @@ const extractRelevantInfosFromGrammarBotReport = (grammarBotReport) => {
   });
 };
 
-const getGrammarBotReport = async (rawContent, apikey) => {
-  const bot = new Grammarbot({
-    api_key: apikey,
-  });
+const getGrammarBotReport = async (rawContent) => {
+  const bot = new Grammarbot();
 
   return bot.checkAsync(rawContent);
 };
 
-const generateReportFromDiffs = async (apikey) => {
+const generateReportFromDiffs = async () => {
   const insertedText = await getContentForNewAndModifiedFiles();
 
   if (insertedText.length === 0)
@@ -140,10 +138,7 @@ const generateReportFromDiffs = async (apikey) => {
       ['From various source file']
     );
 
-  const grammarBotReport = await getGrammarBotReport(
-    insertedText.join('\n'),
-    apikey
-  );
+  const grammarBotReport = await getGrammarBotReport(insertedText.join('\n'));
 
   const shortenendReport = extractRelevantInfosFromGrammarBotReport(
     grammarBotReport
@@ -165,7 +160,7 @@ const generateReportFromDiffs = async (apikey) => {
 const partialGenerateReportForMatchingFiles = (
   sendContentToProofreadingAPI,
   getFileContentMatchingGlob
-) => async (apikey, glob) => {
+) => async (glob) => {
   if (typeof sendContentToProofreadingAPI !== 'function') {
     throw new Error('"sendContentToProofreadingAPI" is not a valid function');
   }
@@ -178,7 +173,7 @@ const partialGenerateReportForMatchingFiles = (
   if (fileContents.length === 0) return linkReporttAndFilePath([], filePaths);
 
   const plannedGrammarBotCall = fileContents.map((content) =>
-    sendContentToProofreadingAPI(content, apikey)
+    sendContentToProofreadingAPI(content)
   );
 
   const grammarBotReports = await Promise.all(plannedGrammarBotCall);

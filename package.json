@@ -1,23 +1,23 @@
 {
   "name": "markdown-proofreader",
-  "version": "0.0.4",
+  "version": "0.0.5-0",
   "description": "",
-  "main": "src/index.js",
+  "main": "src/cli.js",
   "bin": {
-    "markdown-proofreader": "./src/index.js"
+    "markdown-proofreader": "./src/cli.js"
   },
   "scripts": {
-    "test": "npm run lint && npm run test:unit",
+    "test": "npm run test:unit -- --collectCoverage",
     "test:unit": "jest __test__/unit/**",
     "test:e2e": "jest __test__/e2e/**",
-    "start:dev": "node src/index.js",
+    "start:dev": "node src/cli.js",
     "lint": "eslint --ext .js src/ __test__/"
   },
   "files": [
     "src"
   ],
   "keywords": [],
-  "author": "",
+  "author": "Volubyl",
   "license": "MIT",
   "devDependencies": {
     "eslint": "^6.8.0",
@@ -31,6 +31,7 @@
   "dependencies": {
     "chalk": "^4.0.0",
     "commander": "^5.1.0",
+    "fast-glob": "^3.2.2",
     "fs-extra": "^9.0.0",
     "grammarbot": "^1.0.3",
     "highland": "^2.13.5",

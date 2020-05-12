@@ -18,7 +18,6 @@ I was looking for a simple solution to check the syntax and grammar of those not
 
 **Warning** :
 - Markdown Proofreader requires you use `git` as version control software.
-- Grammar Bot requires you to provide a valid 'API_ACCESS_KEY'. You can get an API Key by registering to Grammar Bot (it's free).
 
 Run `npm install markdown-proofreader`.
 
@@ -45,14 +44,14 @@ See [`fast-glob` documentation](https://github.com/mrmlnc/fast-glob) to learn mo
 
 1. Write your next best-seller essai or the documentation of your anti COVID-19 software in plain Markdown
 2. Track the changes (`git add`)
-3. Run `markdown-proofreader -key (--API-KEY) <YOUR_GRAMMAR_BOT_API_KEY>`
+3. Run `markdown-proofreader --diff-only`
 4. Get your report
 
 #### Working with updated files
 
 1. Update your files
 2. Track the changes (`git add`)
-3. Run `markdown-proofreader -key (--API-KEY) <YOUR_GRAMMAR_BOT_API_KEY>`
+3. Run `markdown-proofreader --diff-only`
 4. Get your report
 
 (only the updates will be considered, not the deletion)
@@ -64,8 +63,7 @@ See [`fast-glob` documentation](https://github.com/mrmlnc/fast-glob) to learn mo
 
 ## CLI options
 
-- `-key` , `--API_KEY` : used to provide your GrammarBot API Key (mandatory)
-- `--only-diffs` : used to work in 'only-diff mode'  {optional}
+- `--diff-only` : used to work in 'only-diff mode'  {optional}
 - `--match` : used to provide a glob pattern to target only specific file (optional)
 
 

@@ -37,7 +37,7 @@ program
   .name('markdownproofreader')
   .version('0.O.1')
   .option(
-    '--only-diffs',
+    '--diff-only',
     'will only check the diff from the previous commit. Default to false',
     false
   )
@@ -49,6 +49,6 @@ program
 
 program.parse(process.argv);
 
-const { onlyDiffs, match } = program;
+const { diffOnly, match } = program;
 
-generateAndDisplayReport(onlyDiffs, match);
+generateAndDisplayReport(diffOnly, match);

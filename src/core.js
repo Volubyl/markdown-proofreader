@@ -30,12 +30,10 @@ const stripMarkdown = (markdownText) => {
 const trim = (x) => x.trim();
 const removeNewLign = (x) => x.replace('\n', '');
 
-const getCleanContentPipleLine = () => {
-  return highland.pipeline(
-    highland.map(stripMarkdown),
-    highland.map(removeNewLign)
-  );
-};
+const getCleanContentPipleLine = () => highland.pipeline(
+  highland.map(stripMarkdown),
+  highland.map(removeNewLign),
+);
 
 const getDiffContentStream = (gitDiffStream) => {
   if (!isNodeStream(gitDiffStream)) throw new Error('Invalid stream provided');
@@ -45,7 +43,7 @@ const getDiffContentStream = (gitDiffStream) => {
     highland.map(trim),
     highland.filter(isGitInsert),
     highland.map(removeGitInsertSign),
-    highland.map(trim)
+    highland.map(trim),
   );
 
   return highland(gitDiffStream).pipe(cleanDiffContent);
@@ -59,9 +57,7 @@ const getContentForNewAndModifiedFiles = () => {
     .toPromise(Promise);
 };
 
-const isMarkdownGlob = (glob) => {
-  return ['{md}', 'md'].includes(glob.split('.').pop());
-};
+const isMarkdownGlob = (glob) => ['{md}', 'md'].includes(glob.split('.').pop());
 
 // it's just a little layer of security to avoid reading non-markdown files.
 // Real security is done by cleaning up the markdown afterwards
@@ -73,11 +69,9 @@ const sanatizeGlob = (glob) => {
   return `${glob}.md`;
 };
 
-const getMarkdownFilePaths = async (glob) => {
-  return fg(sanatizeGlob(glob), {
-    ignore: 'node_modules',
-  });
-};
+const getMarkdownFilePaths = async (glob) => fg(sanatizeGlob(glob), {
+  ignore: 'node_modules',
+});
 
 const getContentFromFiles = (filesPaths) => {
   const readFile = highland.wrapCallback(fs.readFile);
@@ -100,25 +94,21 @@ const getContentFromMarkdownFiles = async (glob) => {
 };
 
 const linkReporttAndFilePath = (contents, filesPaths) => {
-  const reducer = (previous, current, index) => {
-    return {
-      ...previous,
-      [current]: contents[index] || [],
-    };
-  };
+  const reducer = (previous, current, index) => ({
+    ...previous,
+    [current]: contents[index] || [],
+  });
   return filesPaths.reduce(reducer, {});
 };
 
 const extractRelevantInfosFromGrammarBotReport = (grammarBotReport) => {
   const { matches } = grammarBotReport;
 
-  return matches.map(({ message, replacements, sentence }) => {
-    return {
-      message,
-      replacements,
-      sentence,
-    };
-  });
+  return matches.map(({ message, replacements, sentence }) => ({
+    message,
+    replacements,
+    sentence,
+  }));
 };
 
 const getGrammarBotReport = async (rawContent) => {
@@ -130,25 +120,26 @@ const getGrammarBotReport = async (rawContent) => {
 const generateReportFromDiffs = async () => {
   const insertedText = await getContentForNewAndModifiedFiles();
 
-  if (insertedText.length === 0)
+  if (insertedText.length === 0) {
     return linkReporttAndFilePath(
       [],
       // currently the diffs are coming from various files.
       // This will be displayed in the terminal :
-      ['From various source file']
+      ['From various source file'],
     );
+  }
 
   const grammarBotReport = await getGrammarBotReport(insertedText.join('\n'));
 
   const shortenendReport = extractRelevantInfosFromGrammarBotReport(
-    grammarBotReport
+    grammarBotReport,
   );
 
   return linkReporttAndFilePath(
     [shortenendReport],
     // currently the diffs are coming from various files.
     // This will be displayed in the terminal :
-    ['From various source file']
+    ['From various source file'],
   );
 };
 
@@ -159,7 +150,7 @@ const generateReportFromDiffs = async () => {
 
 const partialGenerateReportForMatchingFiles = (
   sendContentToProofreadingAPI,
-  getFileContentMatchingGlob
+  getFileContentMatchingGlob,
 ) => async (glob) => {
   if (typeof sendContentToProofreadingAPI !== 'function') {
     throw new Error('"sendContentToProofreadingAPI" is not a valid function');
@@ -172,14 +163,12 @@ const partialGenerateReportForMatchingFiles = (
 
   if (fileContents.length === 0) return linkReporttAndFilePath([], filePaths);
 
-  const plannedGrammarBotCall = fileContents.map((content) =>
-    sendContentToProofreadingAPI(content)
-  );
+  const plannedGrammarBotCall = fileContents.map((content) => sendContentToProofreadingAPI(content));
 
   const grammarBotReports = await Promise.all(plannedGrammarBotCall);
 
   const shortenedReports = grammarBotReports.map(
-    extractRelevantInfosFromGrammarBotReport
+    extractRelevantInfosFromGrammarBotReport,
   );
 
   return linkReporttAndFilePath(shortenedReports, filePaths);
@@ -195,7 +184,7 @@ module.exports = {
   partialGenerateReportForMatchingFiles,
   generateReportForMatchingMarkdownFiles: partialGenerateReportForMatchingFiles(
     getGrammarBotReport,
-    getContentFromMarkdownFiles
+    getContentFromMarkdownFiles,
   ),
   extractRelevantInfosFromGrammarBotReport,
   linkReporttAndFilePath,

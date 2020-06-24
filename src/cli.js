@@ -39,12 +39,12 @@ program
   .option(
     '--diff-only',
     'will only check the diff from the previous commit. Default to false',
-    false
+    false,
   )
   .option(
     '--match <glob>',
     'only check files that match the glob. Default value : *.md',
-    '*.md'
+    '*.md',
   );
 
 program.parse(process.argv);

@@ -19,8 +19,7 @@ const { getReport } = require('../fixtures/report');
 describe('core', () => {
   describe('extractRelevantInfosFromGrammarBotReport', () => {
     it('should return a report from grammarbot report', () => {
-      const message =
-        "Statistics suggests that 'there' (as in 'Is there an answer?') might be the correct word here, not 'their' (as in 'It’s not their fault.'). Please check.";
+      const message = "Statistics suggests that 'there' (as in 'Is there an answer?') might be the correct word here, not 'their' (as in 'It’s not their fault.'). Please check.";
       const proposedReplacementValue = 'there';
 
       const sentence = "I can't remember how to go their.";
@@ -28,7 +27,7 @@ describe('core', () => {
       const grammarBotReport = getGrammarBotReport(
         message,
         sentence,
-        proposedReplacementValue
+        proposedReplacementValue,
       );
 
       const expectedResut = getReport({
@@ -156,52 +155,6 @@ describe('core', () => {
     // });
   });
 
-  describe('linkReporttAndFilePath', () => {
-    it('should return an object with report and file name linked', () => {
-      const filePath1 = 'src/foo.md';
-      const filePath2 = 'src/bar.md';
-      const filePaths = [filePath1, filePath2];
-
-      const report = getReport({
-        message: 'fakeMessage',
-        sentence: 'fakeSentece',
-        replacementValue: 'fakereplacementValue',
-      });
-
-      const report1 = getReport({
-        message: 'fakeMessage1',
-        sentence: 'fakeSentece1',
-        replacementValue: 'fakereplacementValue1',
-      });
-
-      const contents = [report, report1];
-
-      const expectedResult = {
-        [filePath1]: report,
-        [filePath2]: report1,
-      };
-      const result = linkReporttAndFilePath(contents, filePaths);
-      expect(result).toEqual(expectedResult);
-    });
-
-    it('should return an object with file name but no content if no content provided', () => {
-      const report = getReport({
-        message: 'fakeMessage1',
-        sentence: 'fakeSentece1',
-        replacementValue: 'fakereplacementValue1',
-      });
-      const filePath1 = 'src/foo.md';
-      const filePath2 = 'src/bar.md';
-
-      const expectedResult = {
-        [filePath1]: report,
-        [filePath2]: [],
-      };
-      const result = linkReporttAndFilePath([report], [filePath1, filePath2]);
-      expect(result).toEqual(expectedResult);
-    });
-  });
-
   describe('isMarkdownGlob', () => {
     it('should return false if the glob has a non md file extension', () => {
       const glob = 'src/**/*.js';
@@ -264,8 +217,7 @@ describe('core', () => {
 
   describe('partialGenerateReportForMatchingFiles', () => {
     it('should return a report', async () => {
-      const message =
-        "Statistics suggests that 'there' (as in 'Is there an answer?') might be the correct word here, not 'their' (as in 'It’s not their fault.'). Please check.";
+      const message = "Statistics suggests that 'there' (as in 'Is there an answer?') might be the correct word here, not 'their' (as in 'It’s not their fault.'). Please check.";
       const proposedReplacementValue = 'there';
 
       const sentence = "I can't remember how to go their.";
@@ -277,17 +229,15 @@ describe('core', () => {
       const fakeGrammarBotReport = getGrammarBotReport(
         message,
         sentence,
-        proposedReplacementValue
+        proposedReplacementValue,
       );
-      const fakeSendContentToGrammarBot = () =>
-        Promise.resolve(fakeGrammarBotReport);
+      const fakeSendContentToGrammarBot = () => Promise.resolve(fakeGrammarBotReport);
 
-      const fakeFileContentReader = () =>
-        Promise.resolve([[fakeFileName], ['hello']]);
+      const fakeFileContentReader = () => Promise.resolve([[fakeFileName], ['hello']]);
 
       const report = await partialGenerateReportForMatchingFiles(
         fakeSendContentToGrammarBot,
-        fakeFileContentReader
+        fakeFileContentReader,
       )(fakeAPIKey, fakeGlob);
 
       expect(report).toEqual({
@@ -316,12 +266,11 @@ describe('core', () => {
       const fakeGlob = '**/fakeFile';
       const fakeFileName = 'src/fakefile.md';
 
-      const fakeFileContentReader = () =>
-        Promise.resolve([[fakeFileName], ['hello']]);
+      const fakeFileContentReader = () => Promise.resolve([[fakeFileName], ['hello']]);
 
       const partial = partialGenerateReportForMatchingFiles(
         undefined,
-        fakeFileContentReader
+        fakeFileContentReader,
       );
 
       expect(() => partial(fakeAPIKey, fakeGlob)).rejects.toThrow();
@@ -332,7 +281,7 @@ describe('core', () => {
 
       const partial = partialGenerateReportForMatchingFiles(
         fakeSendToGrammarBot,
-        undefined
+        undefined,
       );
 
       expect(() => partial('fakeAPIKey', 'fakeGlob')).rejects.toThrow();
@@ -349,7 +298,7 @@ describe('core', () => {
 
       const report = await partialGenerateReportForMatchingFiles(
         fakeSendContentToGrammarBot,
-        fakeFileContentReader
+        fakeFileContentReader,
       )(fakeAPIKey, fakeGlob);
 
       expect(report).toEqual({

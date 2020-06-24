@@ -90,6 +90,9 @@ const getContentFromFiles = (filesPaths) => {
 const getContentFromMarkdownFiles = async (glob) => {
   const filesPaths = await getMarkdownFilePaths(glob);
   const contents = await getContentFromFiles(filesPaths);
+  console.log("contents", contents)
+  console.log("filesPaths", filesPaths)
+
   return [filesPaths, contents];
 };
 

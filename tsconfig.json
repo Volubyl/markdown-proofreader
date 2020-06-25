@@ -3,6 +3,7 @@
     "outDir": "./build",
     "target": "es5",
     "noImplicitAny": true,
+    "esModuleInterop": true,
     "lib": ["ES2015"]
   },
   "include": ["src", "__test__"],

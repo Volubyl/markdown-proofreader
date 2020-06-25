@@ -22,6 +22,8 @@
   "author": "Volubyl",
   "license": "MIT",
   "devDependencies": {
+    "@types/highland": "^2.12.10",
+    "@types/is-stream": "^2.0.0",
     "@types/jest": "^26.0.3",
     "@typescript-eslint/eslint-plugin": "^3.4.0",
     "@typescript-eslint/parser": "^3.4.0",
@@ -35,13 +37,15 @@
     "typescript": "^3.9.5"
   },
   "dependencies": {
+    "@types/ramda": "^0.27.6",
     "chalk": "^4.0.0",
     "commander": "^5.1.0",
-    "fast-glob": "^3.2.2",
+    "fast-glob": "^3.2.4",
     "fs-extra": "^9.0.0",
     "grammarbot": "^1.0.3",
     "highland": "^2.13.5",
     "is-stream": "^2.0.0",
+    "ramda": "^0.27.0",
     "remark": "^12.0.0",
     "strip-markdown": "^3.1.2"
   }

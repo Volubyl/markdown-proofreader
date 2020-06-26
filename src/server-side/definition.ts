@@ -1,13 +1,58 @@
-type FilePathAndContentTuple = [[string], string];
-type Glob = string;
+import { RawGrammarAndOrthographReportItem, FileContent } from "../domain"
 
-type GrammarAndOrthographReport = {
-    message: string,
-    replacements: string,
-    sentence: string
+type Replacement = {
+    value: string
 }
 
-// maybe this type should be provided by the domain as a contract
+type Match = {
+    message: string,
+    shortMessage: string,
+    replacements: Array<Replacement>,
+    offset: number,
+    length: number,
+    context: {
+        text: string
+        offset: number
+        length: number
+    },
+    sentence: string
+    type: {
+        typeName: string
+    },
+    rule: {
+        id: string
+        description:
+        string
+        issueType: string
+        category: {
+            id: string
+            name: string
+        },
+    },
+}
 
-export type GetContentFromFiles = (glob: Glob) => Promise<FilePathAndContentTuple>;
-export type GetGrammarAndOrthographReport = () => Promise<Array<GrammarAndOrthographReport>>;
+export type GrammarBotReport = {
+    software: {
+        name: string,
+        version: string,
+        apiVersion: number
+        premium: boolean,
+        premiumHint: string,
+        status: string,
+    },
+    warnings: {
+        incompleteResults: boolean,
+    },
+    language: {
+        name: string,
+        code: string
+        detectedLanguage: {
+            name: string
+            code: string
+        },
+    },
+    matches: Array<Match>
+};
+export type RelevantInfosExtractor = (rawReport: GrammarBotReport) => Array<RawGrammarAndOrthographReportItem>
+
+export type RawReportFetcher = (fileConntent: FileContent) => Promise<GrammarBotReport>

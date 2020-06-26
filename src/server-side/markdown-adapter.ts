@@ -69,6 +69,4 @@ export const getContentFromMatchingGlobFiles = async (getFilePaths: FilePathFetc
     return [filesPaths, contents];
 }
 
-const getContentFromMarkdownFiles: GetContentFromFiles = R.partial(getContentFromMatchingGlobFiles, [getMarkdownFilePathsMatchingGlob, extractAndCleanContentFromFiles])
-
-export default getContentFromMarkdownFiles
+export const getContentFromMarkdownFiles: GetContentFromFiles = R.partial(getContentFromMatchingGlobFiles, [getMarkdownFilePathsMatchingGlob, extractAndCleanContentFromFiles])

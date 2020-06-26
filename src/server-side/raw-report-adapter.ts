@@ -22,6 +22,4 @@ export const buildRawReport = async (fetchRawReport: RawReportFetcher, extractRe
     return extractRelevantInfos(rawReport)
 }
 
-const getReportFromGrammarBot: GetRawGrammarAndOrthographReport = R.partial(buildRawReport, [getGrammarBotReport, extractRelevantInfosFromGrammarBotReport])
-
-export default getReportFromGrammarBot
+export const getReportFromGrammarBot: GetRawGrammarAndOrthographReport = R.partial(buildRawReport, [getGrammarBotReport, extractRelevantInfosFromGrammarBotReport])

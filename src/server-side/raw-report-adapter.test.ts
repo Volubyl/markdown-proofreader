@@ -1,7 +1,7 @@
-import { buildRawReport, extractRelevantInfosFromGrammarBotReport } from "../../src/server-side"
-import { getGrammarBotReport } from "../fixtures/grammarBotReport"
-import { FileContent } from "../../src/domain";
-import { GrammarBotReport, RelevantInfosExtractor, RawReportFetcher } from "../../src/server-side/definition";
+import { buildRawReport, extractRelevantInfosFromGrammarBotReport } from "./raw-report-adapter"
+import { getGrammarBotReport } from "../../__test__/fixtures/grammarBotReport"
+import { FileContent } from "../domain";
+import { GrammarBotReport, RelevantInfosExtractor, RawReportFetcher } from "./definition";
 
 describe('RawReportAdapter', () => {
     describe('buildRawReport', () => {

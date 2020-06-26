@@ -2,8 +2,8 @@ import { Readable } from "stream"
 import highland from "highland"
 import {
     getContentFromMatchingGlobFiles, isMarkdownGlob, sanatizeGlob, getCleanContentPipleLine,
-} from "../../src/server-side"
-import { Glob, FilePath } from "../../src/domain";
+} from "./markdown-adapter"
+import { Glob, FilePath } from "../domain";
 
 describe('MarkdownAdapter', () => {
     describe('getContentFromMatchingGlobFiles', () => {

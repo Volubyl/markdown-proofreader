@@ -1,7 +1,12 @@
 import {
-    generateProofReadingReport, FilePathAndContentTuple, Glob, FileContent, buildProofReadingReport, ProofReadingReport,
-} from "../../src/domain"
-import { buildFakeProofReadingReport, buildFakeRawRawGrammarAndOrthographReport } from "../fixtures/report"
+    generateProofReadingReport, buildProofReadingReport,
+} from "./ports"
+
+import {
+    FilePathAndContentTuple, Glob, FileContent, ProofReadingReport,
+} from "./definition"
+
+import { buildFakeProofReadingReport, buildFakeRawRawGrammarAndOrthographReport } from "../../__test__/fixtures/report"
 
 describe('Domain -- Ports', () => {
     describe('generateProofReadingReport', () => {

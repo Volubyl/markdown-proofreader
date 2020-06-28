@@ -9,6 +9,7 @@
   },
 
   "rules": {
-    "max-len" :"off"
+    "max-len" :"off",
+    "import/prefer-default-export" : "off"
   }
 }

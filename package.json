@@ -22,6 +22,7 @@
   "author": "Volubyl",
   "license": "MIT",
   "devDependencies": {
+    "@types/chalk": "^2.2.0",
     "@types/highland": "^2.12.10",
     "@types/is-stream": "^2.0.0",
     "@types/jest": "^26.0.3",

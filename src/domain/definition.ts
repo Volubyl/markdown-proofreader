@@ -1,15 +1,17 @@
 export type FileContent = string
 export type FilePath = string
 export type FilePathAndContentTuple = [Array<FilePath>, Array<FileContent>];
+
+export type ReplacementValue = string
 export type Replacement = {
-    value: string
+    value: ReplacementValue
 }
 
 export type Glob = string;
 
 export type RawGrammarAndOrthographReportItem = {
     message: string,
-    replacements: Array<Replacement>,
+    replacements: Array<ReplacementValue>,
     sentence: string
 }
 

@@ -1,8 +1,6 @@
-import { Readable } from "stream"
-import highland from "highland"
 import {
-    getContentFromMatchingGlobFiles, isMarkdownGlob, sanatizeGlob, getCleanContentPipleLine,
-} from "../markdown-adapter"
+    getContentFromMatchingGlobFiles, isMarkdownGlob, sanatizeGlob,
+} from "../../server-side/markdown-adapter"
 import { Glob, FilePath } from "../../domain";
 
 describe('MarkdownAdapter', () => {
@@ -88,21 +86,21 @@ describe('MarkdownAdapter', () => {
         });
     });
 
-    describe('getCleanContentPipleLine', () => {
-        it('should remove markdown sign and new line mark', async () => {
-            // Here the goal is not to test if we remove all the markdown
-            // The library is already tested
-            const title = "I'm a markdownText";
-            const paragraph = "I'm the secondParagraph";
-            const markownContent = [`### ${title}\n`, `${paragraph}`];
+    // describe('getCleanContentPipleLine', () => {
+    //     it('should remove markdown sign and new line mark', async () => {
+    //         // Here the goal is not to test if we remove all the markdown
+    //         // The library is already tested
+    //         const title = "I'm a markdownText";
+    //         const paragraph = "I'm the secondParagraph";
+    //         const markownContent = [`### ${title}\n`, `${paragraph}`];
 
-            const readableStream = Readable.from(markownContent);
-            const result = await highland(readableStream)
-                .pipe(getCleanContentPipleLine())
-                .collect()
-                .toPromise(Promise);
+    //         const readableStream = Readable.from(markownContent);
+    //         const result = await highland(readableStream)
+    //             .pipe(getCleanContentPipleLine())
+    //             .collect()
+    //             .toPromise(Promise);
 
-            expect(result).toEqual([title, paragraph]);
-        });
-    });
+    //         expect(result).toEqual([title, paragraph]);
+    //     });
+    // });
 });

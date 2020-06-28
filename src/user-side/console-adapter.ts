@@ -4,7 +4,7 @@ import {
     ProofReadingReport, FilePath, ReplacementValue, RawGrammarAndOrthographReportItem,
 } from "../domain"
 
-const { log } = console;
+const { log, error } = console;
 
 export const formatReplacements = (replacements: Array<ReplacementValue>) => {
     if (replacements.length > 0) return replacements.join(', ');
@@ -65,7 +65,7 @@ export const displayReport: DisplayReport = (proofReadingReport: ProofReadingRep
     try {
         const displayableProofreadingReport = makeProofReadingReportDisplayable(proofReadingReport);
         log(displayableProofreadingReport)
-    } catch (error) {
-        displayErrorMessage(error)
+    } catch (e) {
+        displayErrorMessage(e)
     }
 }

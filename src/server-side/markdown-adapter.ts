@@ -8,6 +8,28 @@ import {
     GetContentFromFiles, Glob, FilePath, FilePathAndContentTuple,
 } from '../domain';
 
+// const getDiffContentStream = (gitDiffStream) => {
+//     if (!isNodeStream(gitDiffStream)) throw new Error('Invalid stream provided');
+
+//     const cleanDiffContent = highland.pipeline(
+//       highland.split(),
+//       highland.map(trim),
+//       highland.filter(isGitInsert),
+//       highland.map(removeGitInsertSign),
+//       highland.map(trim),
+//     );
+
+//     return highland(gitDiffStream).pipe(cleanDiffContent);
+//   };
+
+//   const getContentForNewAndModifiedFiles = () => {
+//     const gitDiffStream = spawn('git', ['diff', '--cached', '*.md']).stdout;
+//     return getDiffContentStream(gitDiffStream)
+//       .pipe(getCleanContentPipleLine())
+//       .collect()
+//       .toPromise(Promise);
+//   };
+
 // Proofreading APIs have a quota limited in number of characters.
 // We only want to check the content not the markdown layout
 const stripMarkdown = (markdownText: string) => {
@@ -24,10 +46,10 @@ const stripMarkdown = (markdownText: string) => {
 
 const removeNewLign = (x: string) => x.replace('\n', '');
 
-export const getCleanContentPipleLine = () => highland.pipeline(
-    highland.map(stripMarkdown),
-    highland.map(removeNewLign),
-);
+// export const getCleanContentPipleLine = () => highland.pipeline(
+//     highland.map(stripMarkdown),
+//     highland.map(removeNewLign),
+// );
 
 type FileContentExtractor = (filepaths: Array<FilePath>) => Promise<any>
 
@@ -35,12 +57,13 @@ const extractAndCleanContentFromFiles: FileContentExtractor = (filesPaths) => {
     const readFile = highland.wrapCallback(fs.readFile);
     return highland(filesPaths)
         .map(readFile)
-        .stopOnError((err: string) => {
-            throw new Error(err);
+        .stopOnError((err: Error) => {
+            throw err
         })
         .series()
         .map(String)
-        .pipe(getCleanContentPipleLine())
+        .map(stripMarkdown)
+        .map(removeNewLign)
         .collect()
         .toPromise(Promise);
 }

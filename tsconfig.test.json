@@ -1,7 +1,0 @@
-{
-    "extends": "./tsconfig.json",
-    "exclude": [
-      "src"
-    ],
-    "include": ["__test__/*/**"]
-}

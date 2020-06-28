@@ -1,12 +1,12 @@
 import {
     generateProofReadingReport, buildProofReadingReport,
-} from "./ports"
+} from "../../domain/ports"
 
 import {
     FilePathAndContentTuple, Glob, FileContent, ProofReadingReport,
-} from "./definition"
+} from "../../domain/definition"
 
-import { buildFakeProofReadingReport, buildFakeRawRawGrammarAndOrthographReport } from "../../__test__/fixtures/report"
+import { buildFakeProofReadingReport, buildFakeRawRawGrammarAndOrthographReport } from "../fixtures/report"
 
 describe('Domain -- Ports', () => {
     describe('generateProofReadingReport', () => {
@@ -26,7 +26,7 @@ describe('Domain -- Ports', () => {
             const fakeGetGrammarAndOrthographReport = (content: FileContent) => Promise.resolve([
                 {
                     message,
-                    replacements: [{ value: replacementValue }],
+                    replacements: [replacementValue],
                     sentence: content,
                 },
             ])
@@ -50,7 +50,10 @@ describe('Domain -- Ports', () => {
                 return Promise.resolve(fileContentAndPathTupe);
             }
 
-            const fakeGetGrammarAndOrthographReport = (content: FileContent) => Promise.resolve([])
+            const fakeGetGrammarAndOrthographReport = (content: FileContent) => {
+                expect(content).toBeDefined();
+                return Promise.resolve([])
+            }
 
             const result = await generateProofReadingReport(fakeGetContentFromFiles, fakeGetGrammarAndOrthographReport)(fakeGlob)
             const expectedResult: ProofReadingReport = { [filePath]: [] }

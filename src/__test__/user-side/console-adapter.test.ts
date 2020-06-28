@@ -1,9 +1,9 @@
 import chalk from "chalk"
 import {
-    formatReplacements, formatSentence, formatMessage, makeProofReadingReportDisplayable, makeOneReportDisplayable,
-} from "../console-adapter"
+    formatReplacements, formatSentence, formatMessage, makeProofReadingReportDisplayable, makeReportItemtDisplayable,
+} from "../../user-side/console-adapter"
 
-import { buildFakeRawRawGrammarAndOrthographReport, buildFakeProofReadingReport } from '../../common/__fixtures__/report'
+import { buildFakeRawRawGrammarAndOrthographReport, buildFakeProofReadingReport } from '../fixtures/report'
 
 describe('console-adapter', () => {
     describe('Content Formatter', () => {
@@ -80,7 +80,7 @@ describe('console-adapter', () => {
                 'Possible replacements:',
             )} ${replacementValue}`;
 
-            expect(makeOneReportDisplayable([report])).toBe(expectedResult);
+            expect(makeReportItemtDisplayable([report])).toBe(expectedResult);
         });
 
         it('should format a single report to be displayable -- no available replacement', () => {
@@ -105,7 +105,7 @@ describe('console-adapter', () => {
                 String.fromCharCode(8227),
             )} ${chalk.bold('Sentence:')} ${sentence}`;
 
-            expect(makeOneReportDisplayable([report])).toBe(expectedResult);
+            expect(makeReportItemtDisplayable([report])).toBe(expectedResult);
         });
 
         it('should format multiple reports to be displayable', () => {

@@ -1,7 +1,7 @@
-import { buildRawReport, extractRelevantInfosFromGrammarBotReport, buildReplacementValues } from "../raw-report-adapter"
-import { getGrammarBotReport } from "../../common/__fixtures__/grammarBotReport"
+import { buildRawReport, extractRelevantInfosFromGrammarBotReport, buildReplacementValues } from "../../server-side/raw-report-adapter"
+import { getGrammarBotReport } from "../fixtures/grammarBotReport"
 import { FileContent } from "../../domain";
-import { GrammarBotReport, RelevantInfosExtractor, RawReportFetcher } from "../definition";
+import { GrammarBotReport, RelevantInfosExtractor, RawReportFetcher } from "../../server-side/definition";
 
 describe('RawReportAdapter', () => {
     describe('buildReplacementValue', () => {

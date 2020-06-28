@@ -2,26 +2,26 @@
   "name": "markdown-proofreader",
   "version": "0.1.0",
   "description": "",
-  "main": "build/cli.js",
+  "main": "dist/index.js",
   "bin": {
-    "markdown-proofreader": "./build/cli.js"
+    "markdown-proofreader": "./dist/index.js"
   },
   "scripts": {
     "prepare": "npm run build",
     "test": "npm run test:unit -- --collectCoverage",
-    "test:unit": "jest __test__/unit/**",
-    "test:e2e": "jest __test__/e2e/**",
-    "start:dev": "node src/cli.js",
-    "build": "tsc",
-    "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet"
+    "test:unit": "jest",
+    "start:dev": "node dist/index.js",
+    "build": "tsc -p ./tsconfig.buid.json",
+    "lint": "eslint '*/**/*.{js,ts}' --quiet"
   },
   "files": [
-    "build"
+    "dist"
   ],
   "keywords": [],
   "author": "Volubyl",
   "license": "MIT",
   "devDependencies": {
+    "@types/ramda": "^0.27.6",
     "@types/chalk": "^2.2.0",
     "@types/highland": "^2.12.10",
     "@types/is-stream": "^2.0.0",
@@ -38,7 +38,6 @@
     "typescript": "^3.9.5"
   },
   "dependencies": {
-    "@types/ramda": "^0.27.6",
     "chalk": "^4.0.0",
     "commander": "^5.1.0",
     "fast-glob": "^3.2.4",

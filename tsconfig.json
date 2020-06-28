@@ -1,11 +1,11 @@
 {
   "compilerOptions": {
-    "outDir": "./build",
+    "outDir": "./dist",
     "target": "es5",
     "noImplicitAny": true,
     "esModuleInterop": true,
     "lib": ["ES2015"]
   },
-  "include": ["src", "__test__"],
-  "exclude": ["node_modules"]
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
 }

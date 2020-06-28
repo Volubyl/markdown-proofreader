@@ -1,4 +1,4 @@
-import { ProofReadingReport, RawGrammarAndOrthographReportItem } from "../../src/domain"
+import { ProofReadingReport, RawGrammarAndOrthographReportItem } from "../../domain"
 
 type ReportData = {
   filePath?: string

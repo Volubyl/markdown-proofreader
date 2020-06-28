@@ -6,12 +6,8 @@ import { getContentFromMarkdownFiles, getReportFromGrammarBot } from "./server-s
 import { displayReport } from "./user-side"
 
 const generateAndDisplayReport = async (glob: Glob) => {
-    try {
-        const proofReadingReport = await generateProofReadingReport(getContentFromMarkdownFiles, getReportFromGrammarBot)(glob);
-        displayReport(proofReadingReport)
-    } catch (e) {
-        displayErrorMessage(e);
-    }
+    const proofReadingReport = await generateProofReadingReport(getContentFromMarkdownFiles, getReportFromGrammarBot)(glob);
+    displayReport(proofReadingReport)
 };
 
 program

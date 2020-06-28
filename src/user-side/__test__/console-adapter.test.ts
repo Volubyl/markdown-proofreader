@@ -3,7 +3,7 @@ import {
     formatReplacements, formatSentence, formatMessage, makeProofReadingReportDisplayable, makeOneReportDisplayable,
 } from "../console-adapter"
 
-import { buildFakeRawRawGrammarAndOrthographReport, buildFakeProofReadingReport } from '../../../__test__/fixtures/report'
+import { buildFakeRawRawGrammarAndOrthographReport, buildFakeProofReadingReport } from '../../common/__fixtures__/report'
 
 describe('console-adapter', () => {
     describe('Content Formatter', () => {

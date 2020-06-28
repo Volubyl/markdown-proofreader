@@ -31,18 +31,20 @@ const formatReport = (reportItem: RawGrammarAndOrthographReportItem) => {
     )} ${formatReplacements(reportItem.replacements)}`;
 };
 
-export const makeOneReportDisplayable = (reportItems: Array<RawGrammarAndOrthographReportItem>) => reportItems.reduce((prev, current) => {
+export const makeReportItemtDisplayable = (reportItems: Array<RawGrammarAndOrthographReportItem>) => reportItems.reduce((prev, current) => {
     if (!prev) {
         return formatReport(current);
     }
     return `${prev}\n\n${formatReport(current)}`;
 }, '');
 
+const formatSuccessMessage = (successMessage: string) => chalk.green(`${String.fromCharCode(10004)} ${successMessage}`);
+
 export const makeProofReadingReportDisplayable = (proofReadingReport: ProofReadingReport): string => {
     const keys: Array<FilePath> = Object.keys(proofReadingReport);
 
     return keys.reduce((prev, filePath) => {
-        const workingReport = makeOneReportDisplayable(proofReadingReport[filePath]);
+        const workingReport = makeReportItemtDisplayable(proofReadingReport[filePath]);
         const finalReport = workingReport || formatSuccessMessage('No mistake found here');
 
         const formattedFilePath = formatFilePath(filePath);
@@ -54,7 +56,16 @@ export const makeProofReadingReportDisplayable = (proofReadingReport: ProofReadi
     }, '');
 };
 
+const displayErrorMessage = (e: Error) => {
+    log(chalk.red.bold(`Oh snap something went wrong :`));
+    error(e);
+};
+
 export const displayReport: DisplayReport = (proofReadingReport: ProofReadingReport) => {
-    const displayableProofreadingReport = makeProofReadingReportDisplayable(proofReadingReport);
-    log(displayableProofreadingReport)
+    try {
+        const displayableProofreadingReport = makeProofReadingReportDisplayable(proofReadingReport);
+        log(displayableProofreadingReport)
+    } catch (error) {
+        displayErrorMessage(error)
+    }
 }

@@ -1,5 +1,5 @@
 import { buildRawReport, extractRelevantInfosFromGrammarBotReport, buildReplacementValues } from "../raw-report-adapter"
-import { getGrammarBotReport } from "../../../__test__/fixtures/grammarBotReport"
+import { getGrammarBotReport } from "../../common/fixtures/grammarBotReport"
 import { FileContent } from "../../domain";
 import { GrammarBotReport, RelevantInfosExtractor, RawReportFetcher } from "../definition";
 

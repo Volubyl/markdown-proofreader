@@ -1,4 +1,4 @@
-import { GrammarBotReport } from "../../src/server-side/definition";
+import { GrammarBotReport } from "../../server-side/definition";
 
 export const getGrammarBotReport = (message: string, sentence: string, proposedReplacementValue: string): GrammarBotReport => ({
   software: {

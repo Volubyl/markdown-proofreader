@@ -1,14 +1,10 @@
-import { Replacement, ProofReadingReport, RawGrammarAndOrthographReportItem } from "../../src/domain"
-
-const buildReplacement = (replacementValue: string): Replacement => ({
-  value: replacementValue,
-});
+import { ProofReadingReport, RawGrammarAndOrthographReportItem } from "../../src/domain"
 
 type ReportData = {
   filePath?: string
   message: string,
   sentence: string,
-  replacementValue: string
+  replacementValue?: string
 }
 
 export const buildFakeRawRawGrammarAndOrthographReport = ({ message, sentence, replacementValue }: ReportData, repetition = 3): Array<RawGrammarAndOrthographReportItem> => {
@@ -17,7 +13,7 @@ export const buildFakeRawRawGrammarAndOrthographReport = ({ message, sentence, r
   for (let index = 0; index < repetition; index += 1) {
     reports.push({
       message,
-      replacements: replacementValue ? [buildReplacement(replacementValue)] : [],
+      replacements: replacementValue ? [replacementValue] : [],
       sentence,
     });
   }

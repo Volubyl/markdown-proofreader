@@ -1,9 +1,22 @@
-import { buildRawReport, extractRelevantInfosFromGrammarBotReport } from "./raw-report-adapter"
-import { getGrammarBotReport } from "../../__test__/fixtures/grammarBotReport"
-import { FileContent } from "../domain";
-import { GrammarBotReport, RelevantInfosExtractor, RawReportFetcher } from "./definition";
+import { buildRawReport, extractRelevantInfosFromGrammarBotReport, buildReplacementValues } from "../raw-report-adapter"
+import { getGrammarBotReport } from "../../../__test__/fixtures/grammarBotReport"
+import { FileContent } from "../../domain";
+import { GrammarBotReport, RelevantInfosExtractor, RawReportFetcher } from "../definition";
 
 describe('RawReportAdapter', () => {
+    describe('buildReplacementValue', () => {
+        it('should filter the withe space and keep the value', () => {
+            const replacements = [
+                { value: 'foo' },
+                { value: '  bar' },
+                { value: 'baz  ' },
+                { value: '' },
+                { value: '      ' },
+            ];
+
+            expect(buildReplacementValues(replacements)).toEqual(['foo', 'bar', 'baz']);
+        });
+    });
     describe('buildRawReport', () => {
         it('should fetch and build some RawGrammarAndOrthographReportItem', async () => {
             const message = "A nice message";
@@ -15,7 +28,7 @@ describe('RawReportAdapter', () => {
             const expectedResult = [{
                 message,
                 sentence,
-                replacements: [{ value: proposedReplacementValue }],
+                replacements: [proposedReplacementValue],
             }]
 
             const fakeFetchRawReport: RawReportFetcher = (fileContent: FileContent) => {
@@ -44,7 +57,7 @@ describe('RawReportAdapter', () => {
             const expectedResult = [{
                 message,
                 sentence,
-                replacements: [{ value: proposedReplacementValue }],
+                replacements: [proposedReplacementValue],
             }]
 
             const result = extractRelevantInfosFromGrammarBotReport(fakeGrammarBotReport);

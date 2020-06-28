@@ -1,7 +1,9 @@
 import Grammarbot from "grammarbot"
-import R from "ramda"
 import {
-    GetRawGrammarAndOrthographReport, FileContent, RawGrammarAndOrthographReportItem, Replacement,
+    pipe, isEmpty, map, filter, partial,
+} from "ramda"
+import {
+    GetRawGrammarAndOrthographReport, FileContent, RawGrammarAndOrthographReportItem, Replacement, ReplacementValue,
 } from "../domain";
 import { RawReportFetcher, RelevantInfosExtractor } from "./definition";
 
@@ -10,10 +12,14 @@ const getGrammarBotReport: RawReportFetcher = async (rawContent) => {
     return bot.checkAsync(rawContent);
 };
 
-const mapReplacementToReplacementValue = (replacements: Array<Replacement>) => replacements.map((item) => item.value)
-const removeInexistantReplacement = (replacements: Array<Replacement>) => replacements.filter((item) => item);
+const mapReplacementToReplacementValue = (replacement: Replacement): ReplacementValue => replacement.value
+const removeWhiteSpacedReplacementValue = (replacementValue: ReplacementValue) => replacementValue.trim()
 
-const buildReplacementValues = (replacements: Array<Replacement>) => R.pipe(removeInexistantReplacement, mapReplacementToReplacementValue)(replacements)
+const mapAndCleanReplacement = (replacements: Replacement): ReplacementValue => pipe(mapReplacementToReplacementValue, removeWhiteSpacedReplacementValue)(replacements)
+
+const isEmptyReplacementValue = (replacementValue: ReplacementValue) => !isEmpty(replacementValue)
+
+export const buildReplacementValues = (replacements: Array<Replacement>) => pipe(map(mapAndCleanReplacement), filter(isEmptyReplacementValue))(replacements)
 
 export const extractRelevantInfosFromGrammarBotReport: RelevantInfosExtractor = (grammarBotReport): Array<RawGrammarAndOrthographReportItem> => {
     const { matches } = grammarBotReport;
@@ -29,4 +35,4 @@ export const buildRawReport = async (fetchRawReport: RawReportFetcher, extractRe
     return extractRelevantInfos(rawReport)
 }
 
-export const getReportFromGrammarBot: GetRawGrammarAndOrthographReport = R.partial(buildRawReport, [getGrammarBotReport, extractRelevantInfosFromGrammarBotReport])
+export const getReportFromGrammarBot: GetRawGrammarAndOrthographReport = partial(buildRawReport, [getGrammarBotReport, extractRelevantInfosFromGrammarBotReport])

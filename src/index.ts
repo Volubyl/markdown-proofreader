@@ -7,6 +7,7 @@ import { displayReport } from "./user-side"
 
 const generateAndDisplayReport = async (glob: Glob) => {
     const proofReadingReport = await generateProofReadingReport(getContentFromMarkdownFiles, getReportFromGrammarBot)(glob);
+
     displayReport(proofReadingReport)
 };
 

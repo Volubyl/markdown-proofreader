@@ -10,7 +10,7 @@
     "prepare": "npm run build",
     "test": "npm run test:unit -- --collectCoverage",
     "test:unit": "jest",
-    "start:dev": "node dist/index.js",
+    "start": "npm run prepare && node dist/index.js",
     "build": "tsc -p ./tsconfig.buid.json",
     "lint": "eslint '*/**/*.{js,ts}' --quiet"
   },

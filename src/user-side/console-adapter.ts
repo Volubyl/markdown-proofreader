@@ -1,10 +1,11 @@
 import chalk from "chalk"
+import R from "ramda"
 import { DisplayReport } from "./definition"
 import {
     ProofReadingReport, FilePath, ReplacementValue, RawGrammarAndOrthographReportItem,
-} from "../domain"
+} from "../domain";
 
-const { log, error } = console;
+const { log } = console;
 
 export const formatReplacements = (replacements: Array<ReplacementValue>) => {
     if (replacements.length > 0) return replacements.join(', ');
@@ -61,7 +62,7 @@ const displayGenericMessage = (message: string) => {
 };
 
 export const displayReport: DisplayReport = (proofReadingReport: ProofReadingReport) => {
-    if (!Object.prototype.hasOwnProperty.call(proofReadingReport)) {
+    if (R.isEmpty(proofReadingReport)) {
         displayGenericMessage("There is nothing to check here ...")
         return;
     }

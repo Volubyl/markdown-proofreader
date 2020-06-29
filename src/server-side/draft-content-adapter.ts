@@ -99,7 +99,7 @@ export const getContentFromMatchingGlobFiles = async (getFilePaths: FilePathFetc
 }
 export const partialGetContentFromGitDiffs = async (extractContentFromFiles: FileContentExtractor): Promise<FilePathAndContentTuple> => {
     const contents = await extractContentFromFiles();
-    return [["From various files :"], contents];
+    return [["from various files"], contents];
 }
 
 export const getContentFromMarkdownFiles: GetDraftContent = R.partial(getContentFromMatchingGlobFiles, [getMarkdownFilePathsMatchingGlob, extractAndCleanContentFromFiles]);

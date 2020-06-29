@@ -18,7 +18,6 @@ const generateAndDisplayReport = async (diffOnly: boolean, glob: Glob) => {
         let proofReadingReport: ProofReadingReport;
         if (diffOnly) {
             proofReadingReport = await generateProofReadingReport(getContentFromGitDiffs, getReportFromGrammarBot);
-            displayReport(proofReadingReport);
         } else {
             proofReadingReport = await generateProofReadingReport(getContentFromMarkdownFiles, getReportFromGrammarBot, glob);
         }
@@ -46,4 +45,4 @@ program.parse(process.argv);
 
 const { diffOnly, match: glob } = program;
 
-generateAndDisplayReport(glob, diffOnly);
+generateAndDisplayReport(diffOnly, glob);

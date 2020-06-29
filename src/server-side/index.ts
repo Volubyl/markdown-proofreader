@@ -1,2 +1,2 @@
-export { getContentFromMarkdownFiles } from "./markdown-adapter";
+export { getContentFromMarkdownFiles, getContentFromGitDiffs } from "./draft-content-adapter";
 export { getReportFromGrammarBot } from "./raw-report-adapter"

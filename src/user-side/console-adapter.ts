@@ -56,25 +56,16 @@ export const makeProofReadingReportDisplayable = (proofReadingReport: ProofReadi
     }, '');
 };
 
-const displayErrorMessage = (e: Error) => {
-    log(chalk.red.bold(`Oh snap something went wrong :`));
-    error(e);
-};
-
 const displayGenericMessage = (message: string) => {
     log(chalk.bold(message));
 };
 
 export const displayReport: DisplayReport = (proofReadingReport: ProofReadingReport) => {
-    try {
-        if (!Object.prototype.hasOwnProperty.call(proofReadingReport)) {
-            displayGenericMessage("There is nothing to check here ...")
-            return;
-        }
-        const displayableProofreadingReport = makeProofReadingReportDisplayable(proofReadingReport);
-        displayGenericMessage(`Here is your report :`)
-        log(displayableProofreadingReport)
-    } catch (e) {
-        displayErrorMessage(e)
+    if (!Object.prototype.hasOwnProperty.call(proofReadingReport)) {
+        displayGenericMessage("There is nothing to check here ...")
+        return;
     }
+    const displayableProofreadingReport = makeProofReadingReportDisplayable(proofReadingReport);
+    displayGenericMessage(`Here is your report :`)
+    log(displayableProofreadingReport)
 }

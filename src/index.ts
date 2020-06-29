@@ -1,19 +1,41 @@
 #!/usr/bin/env node
 
 import { program } from 'commander';
-import { generateProofReadingReport, Glob } from "./domain";
-import { getContentFromMarkdownFiles, getReportFromGrammarBot } from "./server-side"
-import { displayReport } from "./user-side"
+import chalk from "chalk"
+import { generateProofReadingReport, Glob, ProofReadingReport } from "./domain";
+import { getContentFromMarkdownFiles, getReportFromGrammarBot, getContentFromGitDiffs } from "./server-side"
+import { displayReport } from "./user-side";
 
-const generateAndDisplayReport = async (glob: Glob) => {
-    const proofReadingReport = await generateProofReadingReport(getContentFromMarkdownFiles, getReportFromGrammarBot)(glob);
+const { log, error } = console
 
-    displayReport(proofReadingReport)
+const displayErrorMessage = (e: Error) => {
+    log(chalk.red.bold(`Oh snap something went wrong :`));
+    error(e);
+};
+
+const generateAndDisplayReport = async (diffOnly: boolean, glob: Glob) => {
+    try {
+        let proofReadingReport: ProofReadingReport;
+        if (diffOnly) {
+            proofReadingReport = await generateProofReadingReport(getContentFromGitDiffs, getReportFromGrammarBot);
+            displayReport(proofReadingReport);
+        } else {
+            proofReadingReport = await generateProofReadingReport(getContentFromMarkdownFiles, getReportFromGrammarBot, glob);
+        }
+        displayReport(proofReadingReport)
+    } catch (e) {
+        displayErrorMessage(e)
+    }
 };
 
 program
     .name('markdownproofreader')
     .version('0.O.1')
+    .option(
+        '--diff-only',
+        'will only check the diff from the previous commit. Default to false',
+        false,
+    )
     .option(
         '--match <glob>',
         'only check files that match the glob. Default value : *.md',
@@ -22,6 +44,6 @@ program
 
 program.parse(process.argv);
 
-const { match } = program;
+const { diffOnly, match: glob } = program;
 
-generateAndDisplayReport(match);
+generateAndDisplayReport(glob, diffOnly);

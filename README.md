@@ -67,6 +67,8 @@ See [`fast-glob` documentation](https://github.com/mrmlnc/fast-glob) to learn mo
 - `--match` : used to provide a glob pattern to target only specific file (optional)
 
 
+
+
 ## FAQ
 
 ### Do you work for GrammarBot ?

@@ -1,5 +1,6 @@
+import R from "ramda"
 import {
-  ProofReadingReport, GenerateProofReadingReport, FileContent, GetRawGrammarAndOrthographReport, FilePath, RawGrammarAndOrthographReportItem,
+  ProofReadingReport, GenerateProofReadingReport, FileContent, GetRawGrammarAndOrthographReport, FilePath, RawGrammarAndOrthographReportItem, Glob,
 } from './definition';
 
 const fetchReportForEachContent = (fileContents: Array<FileContent>, getRawGrammarAndOrthographReport: GetRawGrammarAndOrthographReport): Promise<Array<Array<RawGrammarAndOrthographReportItem>>> => {
@@ -7,15 +8,13 @@ const fetchReportForEachContent = (fileContents: Array<FileContent>, getRawGramm
   return Promise.all(plannedAPICalls);
 }
 
-export const buildProofReadingReport = (rawReports: Array<Array<RawGrammarAndOrthographReportItem>>, filesPaths: Array<FilePath>) => filesPaths.reduce((previous, current, index) => ({
+export const buildProofReadingReport = (rawReports: Array<Array<RawGrammarAndOrthographReportItem>>, filesPaths: Array<FilePath>): ProofReadingReport => filesPaths.reduce((previous, current, index) => ({
   ...previous,
   [current]: rawReports[index] || [],
 }), {});
 
-export const generateProofReadingReport: GenerateProofReadingReport = (getContentFromFiles, getGrammarAndOrthographReport) => async (
-  glob: string,
-): Promise<ProofReadingReport> => {
-  const [filesPaths, fileContents] = await getContentFromFiles(glob);
+export const generateProofReadingReport: GenerateProofReadingReport = async (getDraftContent, getGrammarAndOrthographReport, glob?: Glob): Promise<ProofReadingReport> => {
+  const [filesPaths, fileContents] = await getDraftContent(glob);
 
   if (fileContents.length === 0) {
     return buildProofReadingReport([], filesPaths)

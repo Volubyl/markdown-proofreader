@@ -31,7 +31,7 @@ describe('Domain -- Ports', () => {
                 },
             ])
 
-            const result = await generateProofReadingReport(fakeGetContentFromFiles, fakeGetGrammarAndOrthographReport)(fakeGlob)
+            const result = await generateProofReadingReport(fakeGetContentFromFiles, fakeGetGrammarAndOrthographReport, fakeGlob)
 
             const expectedResult = buildFakeProofReadingReport([{
                 filePath, sentence: fileContent, replacementValue, message,
@@ -55,7 +55,7 @@ describe('Domain -- Ports', () => {
                 return Promise.resolve([])
             }
 
-            const result = await generateProofReadingReport(fakeGetContentFromFiles, fakeGetGrammarAndOrthographReport)(fakeGlob)
+            const result = await generateProofReadingReport(fakeGetContentFromFiles, fakeGetGrammarAndOrthographReport, fakeGlob)
             const expectedResult: ProofReadingReport = { [filePath]: [] }
 
             expect(expectedResult).toEqual(result)

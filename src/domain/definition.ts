@@ -19,10 +19,10 @@ export type ProofReadingReport = {
     [filePath: string]: Array<RawGrammarAndOrthographReportItem>
 }
 
-export type GetContentFromFiles = (glob: Glob) => Promise<FilePathAndContentTuple>;
+export type GetDraftContent = (glob?: Glob) => Promise<FilePathAndContentTuple>;
 
 export type GetRawGrammarAndOrthographReport =
     (fileContent: FileContent) => Promise<Array<RawGrammarAndOrthographReportItem>>;
 
-export type GenerateProofReadingReport = (getContentFromFiles: GetContentFromFiles, getRawGrammarAndOrthographReport: GetRawGrammarAndOrthographReport) =>
-    (glob: Glob) => Promise<ProofReadingReport>
+export type GenerateProofReadingReport = (getDraftContent: GetDraftContent, getRawGrammarAndOrthographReport: GetRawGrammarAndOrthographReport, glob?: Glob) =>
+    Promise<ProofReadingReport>

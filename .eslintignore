@@ -1,2 +1,4 @@
 node_modules/
 **/e2e_test_files
+dist
+dist/

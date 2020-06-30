@@ -1,2 +1,0 @@
-### Typorider
-Type of tyooos

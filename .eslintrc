@@ -1,17 +1,15 @@
 {
-  "env": {
-    "browser": true,
-    "es6": true,
-    "jest": true
-  },
-  "extends": ["airbnb-base",  "plugin:prettier/recommended"],
-  "globals": {
-    "Atomics": "readonly",
-    "SharedArrayBuffer": "readonly"
-  },
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
+  "extends": ["airbnb-typescript/base", "prettier/@typescript-eslint"],
+
   "parserOptions": {
-    "ecmaVersion": 2018,
-    "sourceType": "module"
+    "project": "./tsconfig.json"
   },
-  "rules": {}
+
+  "rules": {
+    "max-len" :"off",
+    "import/prefer-default-export" : "off"
+  }
 }

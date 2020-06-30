@@ -1,4 +1,5 @@
 import chalk from "chalk"
+import { EOL } from "os"
 import {
     formatReplacements, formatSentence, formatMessage, makeProofReadingReportDisplayable, makeReportItemtDisplayable,
 } from "../../user-side/console-adapter"
@@ -74,9 +75,9 @@ describe('console-adapter', () => {
 
             const expectedResult = `${chalk.red(
                 String.fromCharCode(10007),
-            )} ${chalk.bold(message)}\n\n${chalk.bold(
+            )} ${chalk.bold(message)}${EOL}${EOL}${chalk.bold(
                 String.fromCharCode(8227),
-            )} ${chalk.bold('Sentence:')} ${sentence}\n\n${chalk.underline(
+            )} ${chalk.bold('Sentence:')} ${sentence}${EOL}${EOL}${chalk.underline(
                 'Possible replacements:',
             )} ${replacementValue}`;
 
@@ -101,7 +102,7 @@ describe('console-adapter', () => {
 
             const expectedResult = `${chalk.red(
                 String.fromCharCode(10007),
-            )} ${chalk.bold(message)}\n\n${chalk.bold(
+            )} ${chalk.bold(message)}${EOL}${EOL}${chalk.bold(
                 String.fromCharCode(8227),
             )} ${chalk.bold('Sentence:')} ${sentence}`;
 
@@ -158,11 +159,11 @@ describe('console-adapter', () => {
                 _replacementValue: string,
             ) => `${chalk.bold.magentaBright(
                 `${String.fromCharCode(8608)} File: ${_filePath}`,
-            )}\n\n${chalk.red(String.fromCharCode(10007))} ${chalk.bold(
+            )}${EOL}${EOL}${chalk.red(String.fromCharCode(10007))} ${chalk.bold(
                 _message,
-            )}\n\n${chalk.bold(String.fromCharCode(8227))} ${chalk.bold(
+            )}${EOL}${EOL}${chalk.bold(String.fromCharCode(8227))} ${chalk.bold(
                 'Sentence:',
-            )} ${_sentence}\n\n${chalk.underline(
+            )} ${_sentence}${EOL}${EOL}${chalk.underline(
                 'Possible replacements:',
             )} ${_replacementValue}`;
 
@@ -171,7 +172,7 @@ describe('console-adapter', () => {
                 sentence,
                 message,
                 replacementValue,
-            )}\n\n${formatReport(filePath1, sentence1, message1, replacementValue1)}`;
+            )}${EOL}${EOL}${formatReport(filePath1, sentence1, message1, replacementValue1)}`;
             const result = makeProofReadingReportDisplayable(grammarbotReports);
 
             expect(result).toEqual(expectedResult);

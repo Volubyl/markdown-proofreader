@@ -1,5 +1,6 @@
 import chalk from "chalk"
 import R from "ramda"
+import { EOL } from "os"
 import { DisplayReport } from "./definition"
 import {
     ProofReadingReport, FilePath, ReplacementValue, RawGrammarAndOrthographReportItem,
@@ -21,13 +22,13 @@ export const formatSentence = (sentence: string) => `${chalk.bold(String.fromCha
 const formatFilePath = (filepath: FilePath) => chalk.bold.magentaBright(`${String.fromCharCode(8608)} File: ${filepath}`);
 
 const formatReport = (reportItem: RawGrammarAndOrthographReportItem) => {
-    const baseReport = `${formatMessage(reportItem.message)}\n\n${formatSentence(
+    const baseReport = `${formatMessage(reportItem.message)}${EOL}${EOL}${formatSentence(
         reportItem.sentence,
     )}`;
 
     if (reportItem.replacements.length === 0) return baseReport;
 
-    return `${baseReport}\n\n${chalk.underline(
+    return `${baseReport}${EOL}${EOL}${chalk.underline(
         'Possible replacements:',
     )} ${formatReplacements(reportItem.replacements)}`;
 };
@@ -36,7 +37,7 @@ export const makeReportItemtDisplayable = (reportItems: Array<RawGrammarAndOrtho
     if (!prev) {
         return formatReport(current);
     }
-    return `${prev}\n\n${formatReport(current)}`;
+    return `${prev}${EOL}${EOL}${formatReport(current)}`;
 }, '');
 
 const formatSuccessMessage = (successMessage: string) => chalk.green(`${String.fromCharCode(10004)} ${successMessage}`);
@@ -51,9 +52,9 @@ export const makeProofReadingReportDisplayable = (proofReadingReport: ProofReadi
         const formattedFilePath = formatFilePath(filePath);
 
         if (!prev) {
-            return `${formattedFilePath}\n\n${finalReport}`;
+            return `${formattedFilePath}${EOL}${EOL}${finalReport}`;
         }
-        return `${prev}\n\n${formattedFilePath}\n\n${finalReport}`;
+        return `${prev}${EOL}${EOL}${formattedFilePath}${EOL}${EOL}${finalReport}`;
     }, '');
 };
 

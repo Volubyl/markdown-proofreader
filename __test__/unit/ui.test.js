@@ -1,6 +1,6 @@
 const chalk = require('chalk');
 const { getReport, getReports } = require('../fixtures/report');
-
+const {EOL} = require("os");
 const {
   formatReplacements,
   formatMessage,
@@ -75,9 +75,9 @@ describe('Report', () => {
 
       const expectedResult = `${chalk.red(
         String.fromCharCode(10007)
-      )} ${chalk.bold(message)}\n\n${chalk.bold(
+      )} ${chalk.bold(message)}${EOL}${EOL}${chalk.bold(
         String.fromCharCode(8227)
-      )} ${chalk.bold('Sentence:')} ${sentence}\n\n${chalk.underline(
+      )} ${chalk.bold('Sentence:')} ${sentence}${EOL}${EOL}${chalk.underline(
         'Possible replacements:'
       )} ${replacementValue}`;
 
@@ -102,7 +102,7 @@ describe('Report', () => {
 
       const expectedResult = `${chalk.red(
         String.fromCharCode(10007)
-      )} ${chalk.bold(message)}\n\n${chalk.bold(
+      )} ${chalk.bold(message)}${EOL}${EOL}${chalk.bold(
         String.fromCharCode(8227)
       )} ${chalk.bold('Sentence:')} ${sentence}`;
 
@@ -158,11 +158,11 @@ describe('Report', () => {
       ) =>
         `${chalk.bold.magentaBright(
           `${String.fromCharCode(8608)} File: ${_filePath}`
-        )}\n\n${chalk.red(String.fromCharCode(10007))} ${chalk.bold(
+        )}${EOL}${EOL}${chalk.red(String.fromCharCode(10007))} ${chalk.bold(
           _message
-        )}\n\n${chalk.bold(String.fromCharCode(8227))} ${chalk.bold(
+        )}${EOL}${EOL}${chalk.bold(String.fromCharCode(8227))} ${chalk.bold(
           'Sentence:'
-        )} ${_sentence}\n\n${chalk.underline(
+        )} ${_sentence}${EOL}${EOL}${chalk.underline(
           'Possible replacements:'
         )} ${_replacementValue}`;
 
@@ -171,7 +171,7 @@ describe('Report', () => {
         sentence,
         message,
         replacementValue
-      )}\n\n${formatReport(filePath1, sentence1, message1, replacementValue1)}`;
+      )}${EOL}${EOL}${formatReport(filePath1, sentence1, message1, replacementValue1)}`;
       const result = makeMultipleReportDislayable(grammarbotReports);
 
       expect(result).toEqual(expectedResult);

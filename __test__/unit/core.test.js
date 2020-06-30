@@ -1,5 +1,6 @@
 const { Readable } = require('stream');
 const highland = require('highland');
+const {EOL} = require("os");
 const {
   getDiffContentStream,
   isGitInsert,
@@ -88,7 +89,7 @@ describe('core', () => {
         `+${insertWithoutMarkdown}`,
         `-${deletionWithoutMarkdown}`,
         ` + ${insertWithSpaces}`,
-      ].join('\n');
+      ].join(EOL);
 
       const readableStream = Readable.from(gitDiff);
 
@@ -121,7 +122,7 @@ describe('core', () => {
       // The library is already tested
       const title = "I'm a markdownText";
       const paragraph = "I'm the secondParagraph";
-      const markownContent = [`### ${title}\n`, `${paragraph}`];
+      const markownContent = [`### ${title}${EOL}`, `${paragraph}`];
 
       const readableStream = Readable.from(markownContent);
       const result = await highland(readableStream)

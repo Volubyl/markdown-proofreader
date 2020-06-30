@@ -1,6 +1,7 @@
 const chalk = require('chalk');
 
 const { log, error } = console;
+const {EOL} = require("os");
 
 const filterReplacement = (replacements) =>
   replacements
@@ -25,7 +26,7 @@ const formatFilePath = (filepath) =>
   chalk.bold.magentaBright(`${String.fromCharCode(8608)} File: ${filepath}`);
 
 const formatReport = (report) => {
-  const baseReport = `${formatMessage(report.message)}\n\n${formatSentence(
+  const baseReport = `${formatMessage(report.message)}${EOL}${EOL}${formatSentence(
     report.sentence
   )}`;
 
@@ -33,7 +34,7 @@ const formatReport = (report) => {
 
   if (filtredReplacement.length === 0) return baseReport;
 
-  return `${baseReport}\n\n${chalk.underline(
+  return `${baseReport}${EOL}${EOL}${chalk.underline(
     'Possible replacements:'
   )} ${formatReplacements(filtredReplacement)}`;
 };
@@ -46,7 +47,7 @@ const makeOneReportDisplayable = (report) =>
     if (!prev) {
       return formatReport(current);
     }
-    return `${prev}\n\n${formatReport(current)}`;
+    return `${prev}${EOL}${EOL}${formatReport(current)}`;
   }, '');
 
 const makeMultipleReportDislayable = (reports) => {
@@ -60,9 +61,9 @@ const makeMultipleReportDislayable = (reports) => {
     const formattedFilePath = formatFilePath(filePath);
 
     if (!prev) {
-      return `${formattedFilePath}\n\n${finalReport}`;
+      return `${formattedFilePath}${EOL}${EOL}${finalReport}`;
     }
-    return `${prev}\n\n${formattedFilePath}\n\n${finalReport}`;
+    return `${prev}${EOL}${EOL}${formattedFilePath}${EOL}${EOL}${finalReport}`;
   }, '');
 };
 
@@ -72,7 +73,7 @@ const displayReports = (reports) => {
   const title = "We've checked your files. Here is what we found :";
 
   log(
-    `${chalk.bold(title)}\n\n${makeMultipleReportDislayable(workingReports)}`
+    `${chalk.bold(title)}${EOL}${EOL}${makeMultipleReportDislayable(workingReports)}`
   );
 };
 
@@ -84,7 +85,7 @@ const displayErrorMessage = (e) => {
   error(e);
 };
 
-const displayInfoMessage = (message) => log(chalk.bold(`\n${message}\n`));
+const displayInfoMessage = (message) => log(chalk.bold(`${EOL}${message}${EOL}`));
 
 module.exports = {
   formatReplacements,

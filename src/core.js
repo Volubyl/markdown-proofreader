@@ -5,6 +5,7 @@ const remark = require('remark');
 const strip = require('strip-markdown');
 const fs = require('fs');
 const fg = require('fast-glob');
+const {EOL} = require("os");
 const Grammarbot = require('grammarbot');
 
 // We are only intersted by strings beginning by '+' and not by those beginning by '++'
@@ -28,7 +29,7 @@ const stripMarkdown = (markdownText) => {
 };
 
 const trim = (x) => x.trim();
-const removeNewLign = (x) => x.replace('\n', '');
+const removeNewLign = (x) => x.replace(EOL, '');
 
 const getCleanContentPipleLine = () => {
   return highland.pipeline(
@@ -138,7 +139,7 @@ const generateReportFromDiffs = async () => {
       ['From various source file']
     );
 
-  const grammarBotReport = await getGrammarBotReport(insertedText.join('\n'));
+  const grammarBotReport = await getGrammarBotReport(insertedText.join(EOL));
 
   const shortenendReport = extractRelevantInfosFromGrammarBotReport(
     grammarBotReport

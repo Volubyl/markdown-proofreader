@@ -1,4 +1,4 @@
-# Architecture et post-mortem
+# Notes d'architecture et post-mortem
 
 
 
@@ -20,7 +20,7 @@ Dans cette implémentation, la correction sera présentée sous forme d'un `rapp
 
 Ce rapport est obtenu via un service de correction tiers. Pour le moment, l'application utilise  [`GrammarBot`](https://www.grammarbot.io/).
 
-Que ce soit l'obtention de contenu, le mode d'affichage ou bien le service tiers sont juste des détails d'implémentation. Je souhaitais que ceux-ci soient facilement modifiables et remplaçables au profit d'autres.
+L'obtention de contenu, le mode d'affichage ou bien le service tiers sont juste des détails d'implémentation. Je souhaitais que ceux-ci soient facilement modifiables et remplaçables au profit d'autres.
 
 ## Implémentation
 
@@ -89,7 +89,7 @@ Au final ce qui me reste est le lien entre tout cela. C'est cette couche qui per
 
 ### Possibilité d'extension
 
-Avec cette organisation, j'ai l'impression qu'il va être d'étendre l'application. Imaginons que je souhaite afficher le rapport dans une page web, il suffira d'ajouter du code dans la partie `user-side` pour afficher le rapport dans du HTML. Imaginons que les données à corriger proviennent d'une DB, il suffira de rajouter une fonction qui implémentera le type attendu par le domaine, etc ...
+Avec cette organisation, j'ai l'impression qu'il va être simple d'étendre l'application. Imaginons que je souhaite afficher le rapport dans une page web, il suffira d'ajouter du code dans la partie `user-side` pour afficher le rapport dans du HTML. Imaginons que les données à corriger proviennent d'une DB, il suffira de rajouter une fonction qui implémentera le type attendu par le domaine, etc ...
 
 ### Un problème de nom
 
